@@ -1,0 +1,16 @@
+\section{Modello concettuale}
+Il modello descritto può essere schematizzato nel seguente modo:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/modello_schematizzato.png}
+    \caption{Modello concettuale del sistema di autoscaling gerarchico con Spike Server}
+\end{figure}
+I job arrivano e a seconda del livello di pienezza dei webservers.
+Nonostante il sistema possa sembrare troppo semplice per una analisi simulativa, ci sono una serie di aspetti che lo rendono complesso e difficilmente modellabile solo matematicamente senza semplificazioni:
+\begin{itemize}
+    \item Tempi di arrivo iperesponenziali: Questi arrivi e i servizi non esponenziali vengono utilizzati in questo contesto per modellare le fluttuazioni del carico. Matematicamente non sono facilmente modellabili se non considerando le relazioni che valgono per delle distribuzioni generiche, Il che porterebbe a meno informazioni di valore per l’analisi.
+    \item Il routing non è probabilistico: il routing dei job non è semplicemente probabilistico ( 40\% su uno e 60\% su un altro), ma dipende strettamente dallo stato dei webservers nel momento del routing. Questa complicazione rende molto difficile un'analisi statica, soprattutto nel transiente.
+\end{itemize}
+
+
+Spiegazione tempi di servizio esponenziale: Nel caso di studio affrontato nel libro viene utilizzata una distribuzione iperesponenziale nel tassi di servizio per modellare il fatto che ad un server arrivano job di dimensione molto variabile. Ovviamente questa cosa potrebbe essere modellata anche utilizzando delle size dei job differenti anziché agire sul tasso di servizio. Tuttavia ho deciso di attenermi al testo originale e utilizzare anche io dei tassi di servizio iperesponenziali per modellare questo comportamento. 

@@ -1,0 +1,9 @@
+\section{Obiettivi dello studio}
+Lo studio si pone l'obiettivo di analizzare e validare l'efficacia del modello di autoscaling gerarchico attraverso la simulazione. Gli obiettivi specifici sono:
+\begin{itemize}
+    \item identificare il valore di carico di lavoro che supera i tempi di risposta richiesti
+    \item Identificare il valore ottimale di SI\_max: Per un dato carico di lavoro (es. 40,000 richieste/ora), determinare il valore di SI\_max che minimizza il tempo di risposta medio del sistema o lo mantiene al di sotto di un valore target definito da un Service Level Agreement, come gli 8 secondi utilizzati nel libro.
+    \item Studiare il comportamento del sistema sotto carichi crescenti: Analizzare le prestazioni del sistema (in particolare il tempo di risposta) al variare del tasso di arrivo delle richieste (carico leggero, medio, pesante) utilizzando la soglia SI\_max.
+    \item Studiare il sistema con fluttuazioni a breve e a lungo termine: Analizzare le prestazioni del sistema introducendo fluttuazioni a breve e lungo termine, utilizzando sempre la soglia SI\_max
+    \item Trovare due nuovi SI\_max per fluttuazioni a breve e a lungo termine per rimanere sotto un certo tempo di risposta (8 secondi)
+\end{itemize}

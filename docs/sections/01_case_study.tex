@@ -3,7 +3,7 @@ Il sistema oggetto di studio è un'architettura di data center per un Internet S
 
 Il problema principale affrontato è il "right-sizing", ovvero come evitare sia il sovradimensionamento (spreco di risorse) sia il sottodimensionamento (violazione degli SLA e degrado delle prestazioni), specialmente in presenza di fluttuazioni di carico a breve e lungo termine.
 
-L'architettura proposta, come descritto nel caso di studio 6.2 del libro di testo “Performance Engineer”, si basa su un livello di scaling verticale che gestisce i picchi di carico improvvisi e di breve durata. Questo livello introduce uno Spike Server dedicato. Un Load Controller monitora un indicatore di picco (Spike Indicator, SI), definito come il numero di richieste concorrenti in esecuzione su un Web Server.
+L'architettura proposta, come descritto nel caso di studio 6.2 del libro di testo “Performance Engineer”, si basa su un livello di scaling verticale che gestisce i picchi di carico improvvisi e di breve durata. Questo livello introduce uno Spike Server dedicato. Un Load Controller monitora un indicatore di picco (Spike Indicator, SI), definito come il numero di richieste concorrenti totali presenti su un Web Server (tutte le richieste vengono gestite con un scheduler processor sharing).
 
 Il comportamento del sistema seguirebbe quanto descritto:
 \begin{itemize}

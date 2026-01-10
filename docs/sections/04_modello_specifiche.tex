@@ -1,0 +1,32 @@
+\section{Modello delle specifiche}
+
+Componenti fisici del sistema:
+\begin{itemize}
+    \item Web server principale
+    \item Spike server
+\end{itemize}
+Componenti logici del sistema:
+\begin{itemize}
+    \item Load Controller
+\end{itemize}
+
+Specifiche del carico di lavoro:
+\begin{itemize}
+    \item Arrivi: Processo di arrivo iperesponenziale con cv = 4 e media 0.15 secondi (40,000 richieste/ora)
+    \item Servizio: Distribuzione iperesponenziale con cv = 4 e media 0.16 secondi (web server), media 0.08 secondi (spike server)
+    \item Scheduling: Processor Sharing
+\end{itemize}
+
+
+Classi di clienti:
+\begin{itemize}
+    \item Arrivi normali
+    \item Token: sono gettoni di controllo che servono al Load Controller. C'è un numero fisso di token (SI\_max). Ogni volta che arriva una richiesta, se ci sono token disponibili, ne viene consumato uno e la richiesta viene inviata al webserver principale. Se non ci sono token disponibili, la richiesta viene inviata allo spike server. Quando una richiesta termina il servizio, il token viene restituito al Load Controller.
+\end{itemize}
+
+
+Logica di controllo:
+\begin{itemize}
+    \item Se \(SI < SI\_max\): invia al webserver principale
+    \item Se \(SI \geq SI\_max\): invia allo spike server
+\end{itemize}

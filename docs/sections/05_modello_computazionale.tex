@@ -1,0 +1,41 @@
+\section{Modello Computazionale}
+
+\subsection{Stato del sistema}
+
+\begin{itemize}
+    \item SI: Spike indicator (numero di job nel web server)
+    \item n\_spike: numero di job nello spike server
+\end{itemize}
+
+\subsection{Identificazione degli eventi}
+\begin{itemize}
+    \item arrivo di un nuovo job
+    \item completamento di un job nel web server
+    \item completamento di un job nello spike server
+\end{itemize}
+
+\subsection{Logica di controllo e routing}
+Ogni volta che arriva un nuovo job:
+\begin{itemize}
+    \item Se \(SI \leq SI\_max\), viene incrementato SI di 1 e il job viene inviato al web server.
+    \item Se \(SI > SI\_max\), viene incrementato n\_spike di 1 e il job viene inviato allo spike server.
+\end{itemize} 
+
+Ogni volta che job termina decremenenta il corrispettivo contatore restituendo il token.
+
+\subsection{Implementazione dello scheduler}
+Al contrario di quanto avviene nel caso di studio di riferimento in cui si usa uno scheduling processor sharing, in questo progetto userò uno scheduling FIFO per entrambi i server.
+
+
+\subsection{Configurazione dei parametri delle distribuzioni}
+\begin{itemize}
+    \item Stream 0: Inter-arrivi (Iperesponenziale, media 0.15s, cv=4).
+    \item Stream 1: Servizio Web Server (Iperesponenziale, media 0.16s, cv=4).
+    \item Stream 2: Servizio Spike Server (Iperesponenziale, media 0.08s, cv=4).
+\end{itemize}
+
+    
+
+
+
+

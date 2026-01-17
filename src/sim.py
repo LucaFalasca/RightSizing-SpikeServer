@@ -4,6 +4,8 @@ import logging
 import numpy as np
 import multiprocessing
 
+from welford_stats import WelfordStats
+
 # Configurazione logging per debug
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -31,7 +33,7 @@ class Simulator:
     def __init__(self):
         plantSeeds(Simulator.SEED)
         # --- Parametri del Modello di default ---
-        self._SI_max = 10                 # Soglia SI_max (da ottimizzare)
+        self._SI_max = 160                 # Soglia SI_max (da ottimizzare)
         self._arrival_mean = 0.15          # 400 req/min
         self._web_mean     = 0.16          
         self._spike_mean   = 0.08          # Tasso doppio rispetto al web server 
@@ -79,11 +81,15 @@ class Simulator:
     def cv(self, value):
         self._cv = value
 
-    def set_parameters(self, arrival_mean, web_mean, spike_mean, cv):
+    def set_parameters(self, SI_max, arrival_mean, web_mean, spike_mean, cv):
+        self.SI_max = SI_max
         self.arrival_mean = arrival_mean
         self.web_mean = web_mean
         self.spike_mean = spike_mean
         self.cv = cv
+
+    def get_parameters(self):
+        return (self._SI_max, self._arrival_mean, self._web_mean, self._spike_mean, self._cv)
         
     def reset(self):
         self._stream_usage = {}
@@ -135,14 +141,26 @@ class Simulator:
             processes.append(p)
             p.start()
 
+
+        stats = {}
+
         # Processo i risultati intanto
         for i in range(Simulator.REPLICAS):
             result = queue_output.get()
-            print(f"Risultati Replica #{i} raccolti")
-            # TODO
+            
+            for key, value in result.items():
+                if value is not None:
+                    if key not in stats:
+                        stats[key] = WelfordStats()
+                    stats[key].update(value)
+                
+            if (i + 1) % 10 == 0:
+                print(f"Raccolte {i + 1}/{Simulator.REPLICAS} repliche...")
 
         for p in processes:
             p.join()
+
+        return self.get_parameters(), stats
 
     def _run(self, worker_id, queue_input, queue_output, SI_max):
         plantSeeds(Simulator.SEED)
@@ -152,7 +170,7 @@ class Simulator:
         
 
         input_replica = queue_input.get()
-        print(f"Queue Input Replica: {input_replica}")
+        logging.debug(f"Queue Input Replica: {input_replica}")
         while input_replica is not None:
 
             t = Simulator.START
@@ -268,43 +286,53 @@ class Simulator:
                 # Aggiorno il tempo corrente
                 t = t + time_to_next_event
 
+            if any(stream_usage > MODULUS / STREAMS for stream_usage in self._stream_usage.values()):
+                logging.warning("The use of the RNG stream has exceeded the maximum limit!")
+                arrival_stream = 4 * Simulator.N_PROCESSES + worker_id
+                web_stream = 5 * Simulator.N_PROCESSES + worker_id
+                spike_stream = 6 * Simulator.N_PROCESSES + worker_id
+                self._stream_usage = {}
+                break
+
             # # --- Risultati Finali ---
             total_jobs_completed = n_web_completed + n_spike_completed
             np_response_times_web = np.array(response_times_web)
             np_response_times_spike = np.array(response_times_spike)
-            logging.debug(f"np_response_times_web: {np_response_times_web[0:10]}")
-            logging.debug(f"np_response_times_spike: {np_response_times_spike[0:10]}")
-            avg_response_time_web = np_response_times_web.mean()
-            avg_response_time_spike = np_response_times_spike.mean()
+            avg_response_time_web = np_response_times_web.mean() if n_web_completed > 0 else None
+            avg_response_time_spike = np_response_times_spike.mean() if n_spike_completed > 0 else None
             np_response_times_total = np.concatenate((np_response_times_web, np_response_times_spike))
             avg_response_time_total = np_response_times_total.mean()
             interval_time = Simulator.STOP - Simulator.BIAS_PHASE
 
-            if any(stream_usage > MODULUS / STREAMS for stream_usage in self._stream_usage.values()):
-                logging.warning("The use of the RNG stream has exceeded the maximum limit!")
-                queue_input.put(input_replica)
-                input_replica = None
-                break
+            replica_results = {
+                "web_response_time": avg_response_time_web,
+                "spike_response_time": avg_response_time_spike,
+                "total_response_time": avg_response_time_total,
+                "utilization_web": busy_time_web / interval_time,
+                "utilization_spike": busy_time_spike / interval_time,
+                "throughput_web": n_web_completed / interval_time,
+                "throughput_spike": n_spike_completed / interval_time,
+                "throughput_total": total_jobs_completed / interval_time,
+                "scaling_actions": scaling_actions
+            }
 
-            queue_output.put("Results")
-
-            # print(f"--- Risultati con SI_MAX = {SI_max} ---")
-            # print(f"Job Totali: {total_jobs_completed}")
-            # print(f"Tempo di Risposta Medio Web (E[R]): {avg_response_time_web:.4f} s")
-            # print(f"Tempo di Risposta Medio Spike (E[R]): {avg_response_time_spike:.4f} s")
-            # print(f"Tempo di Risposta Medio Totale (E[R]): {avg_response_time_total:.4f} s")
-            # print(f"Percentuale Job Web Server: {(n_web_completed/total_jobs_completed)*100:.2f}%")
-            # print(f"Percentuale Job Spike Server: {(n_spike_completed/total_jobs_completed)*100:.2f}%")
-            # print(f"Utilizzazione Web Server: {(busy_time_web/interval_time)*100:.2f}%")
-            # print(f"Utilizzazione Spike Server: {(busy_time_spike/interval_time)*100:.2f}%")
-            # print(f"Throughput Web Server: {n_web_completed/ interval_time:.4f} jobs/s")
-            # print(f"Throughput Spike Server: {n_spike_completed/ interval_time:.4f} jobs/s")
-            # print(f"Throughput Totale: {total_jobs_completed/ interval_time:.4f} jobs/s")
-            # print(f"Numero di Azioni di Scaling: {scaling_actions}")
+            queue_output.put(replica_results)
             input_replica = queue_input.get()
-            print(f"Queue Input Replica: {input_replica}")
-        print(f"Worker {worker_id} terminato con stream usage {self._stream_usage}.")
+            logging.debug(f"Queue Input Replica: {input_replica}")
+        logging.debug(f"Worker {worker_id} terminato con stream usage {self._stream_usage}.")
 
 if __name__ == "__main__":
     sim = Simulator()
-    sim.run()
+    parameters, stats = sim.run()
+    print("\nSimulazione completata con i seguenti parametri:")
+    SI_max, arrival_mean, web_mean, spike_mean, cv = parameters
+    print(f"  SI_max: {SI_max}")
+    print(f"  Arrival Mean: {arrival_mean}")
+    print(f"  Web Mean: {web_mean}")
+    print(f"  Spike Mean: {spike_mean}")
+    print(f"  Coefficiente di Variazione: {cv}")
+    print("\nStatistiche raccolte con intervallo di confidenza al 95%:")
+    for metric, w in stats.items():
+        mean = w.mean
+        ci = w.confidence_interval_95()
+        print(f"{metric:<25}: {mean:.4f} +/- {ci:.4f} (Var: {w.variance:.6f})")

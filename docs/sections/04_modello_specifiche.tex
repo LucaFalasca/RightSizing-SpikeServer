@@ -30,3 +30,7 @@ Logica di controllo:
     \item Se \(SI < SI\_max\): invia al webserver principale
     \item Se \(SI \geq SI\_max\): invia allo spike server
 \end{itemize}
+
+
+Gestione della fine della simulazione:
+Dato che il sistema viene studiato in un stato transitorio, esso fa riferimento ad un orizzonte temporale prefissato che va dai 120 secondi (per eliminare il bias della fase iniziale in cui le code sono ancora vuote) ai 1200 secondi di simulazione. Questo viene fatto nel report di riferimento e quindi per confrontare al meglio i risultati si è deciso di adottare lo stesso approccio. Inoltre, non verrà fatta allo scadere del tempo di simulazione una pulizia delle code, ma si considereranno solo i job completati entro il tempo di simulazione.

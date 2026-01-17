@@ -225,6 +225,7 @@ class Simulator:
         avg_response_time_spike = np_response_times_spike.mean()
         np_response_times_total = np.concatenate((np_response_times_web, np_response_times_spike))
         avg_response_time_total = np_response_times_total.mean()
+        interval_time = Simulator.STOP - Simulator.BIAS_PHASE
 
         print(f"--- Risultati con SI_MAX = {self._SI_max} ---")
         print(f"Job Totali: {total_jobs_completed}")
@@ -233,9 +234,9 @@ class Simulator:
         print(f"Tempo di Risposta Medio Totale (E[R]): {avg_response_time_total:.4f} s")
         print(f"Percentuale Job Web Server: {(n_web_completed/total_jobs_completed)*100:.2f}%")
         print(f"Percentuale Job Spike Server: {(n_spike_completed/total_jobs_completed)*100:.2f}%")
-        print(f"Utilizzazione Web Server: {(self._busy_time_web/t)*100:.2f}%")
-        print(f"Utilizzazione Spike Server: {(self._busy_time_spike/t)*100:.2f}%")
-        print(f"Throughput Web Server: {n_web_completed/ t:.4f} jobs/s")
-        print(f"Throughput Spike Server: {n_spike_completed/ t:.4f} jobs/s")
-        print(f"Throughput Totale: {total_jobs_completed/ t:.4f} jobs/s")
+        print(f"Utilizzazione Web Server: {(self._busy_time_web/interval_time)*100:.2f}%")
+        print(f"Utilizzazione Spike Server: {(self._busy_time_spike/interval_time)*100:.2f}%")
+        print(f"Throughput Web Server: {n_web_completed/ interval_time:.4f} jobs/s")
+        print(f"Throughput Spike Server: {n_spike_completed/ interval_time:.4f} jobs/s")
+        print(f"Throughput Totale: {total_jobs_completed/ interval_time:.4f} jobs/s")
         print(f"Numero di Azioni di Scaling: {scaling_actions}")

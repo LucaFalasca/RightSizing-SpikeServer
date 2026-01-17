@@ -36,7 +36,6 @@ class Simulator:
     N_PROCESSES = 12    # Numero di processi paralleli per eseguire le repliche, deve essere <= 85 se no non bastano gli stream RNG
 
     def __init__(self):
-        plantSeeds(Simulator.SEED)
         # --- Parametri del Modello di default ---
         self._SI_max = 160                 # Soglia SI_max (da ottimizzare)
         self._arrival_mean = 0.15          # 400 req/min
@@ -97,6 +96,7 @@ class Simulator:
         return (self._SI_max, self._arrival_mean, self._web_mean, self._spike_mean, self._cv)
         
     def reset(self):
+        plantSeeds(Simulator.SEED)
         self._stream_usage = {}
 
     def reset_seed(self):

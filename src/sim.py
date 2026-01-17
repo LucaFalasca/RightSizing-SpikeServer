@@ -1,4 +1,4 @@
-from rngs import plantSeeds, selectStream
+from rngs import MODULUS, STREAMS, plantSeeds, selectStream
 from hyperexp import Hyperexponential
 import logging
 import numpy as np
@@ -26,7 +26,7 @@ class Simulator:
     INFINITY   = 1e15
     SEED = 8
     REPLICAS = 100
-    N_PROCESSES = 15    # Numero di processi paralleli per eseguire le repliche, deve essere <= 85 se no non bastano gli stream RNG
+    N_PROCESSES = 12    # Numero di processi paralleli per eseguire le repliche, deve essere <= 85 se no non bastano gli stream RNG
 
     def __init__(self):
         plantSeeds(Simulator.SEED)
@@ -36,6 +36,7 @@ class Simulator:
         self._web_mean     = 0.16          
         self._spike_mean   = 0.08          # Tasso doppio rispetto al web server 
         self._cv           = 4.0           # Coefficiente di variazione richiesto 
+        self._stream_usage = {}
         self.reset()
 
     @property
@@ -85,22 +86,30 @@ class Simulator:
         self.cv = cv
         
     def reset(self):
-        pass
+        self._stream_usage = {}
 
     def reset_seed(self):
         plantSeeds(Simulator.SEED)
 
     def _GetArrival(self, stream):
         selectStream(stream) # Stream 0 per gli arrivi
+        self._track_rng_usage(stream, 2)  # l'iperesponenziale usa 2 RNG per ogni chiamata
         return Hyperexponential(self.arrival_mean, self.cv)
 
     def _GetServiceWeb(self, stream):
         selectStream(stream) # Stream 1 per il Web Server
+        self._track_rng_usage(stream, 2)  # l'iperesponenziale usa 2 RNG per ogni chiamata
         return Hyperexponential(self.web_mean, self.cv)
     
     def _GetServiceSpike(self, stream):
         selectStream(stream) # Stream 2 per lo Spike Server 
+        self._track_rng_usage(stream, 2)  # l'iperesponenziale usa 2 RNG per ogni chiamata
         return Hyperexponential(self.spike_mean, self.cv)
+    
+    def _track_rng_usage(self, stream, count=1):
+        if stream not in self._stream_usage:
+            self._stream_usage[stream] = 0
+        self._stream_usage[stream] += count
     class Job:
         def __init__(self, arrival_time, service_demand, is_spike=False):
             self.arrival_time = arrival_time
@@ -140,6 +149,7 @@ class Simulator:
         arrival_stream = worker_id
         web_stream = Simulator.N_PROCESSES + worker_id
         spike_stream = 2 * Simulator.N_PROCESSES + worker_id
+        
 
         input_replica = queue_input.get()
         print(f"Queue Input Replica: {input_replica}")
@@ -270,6 +280,12 @@ class Simulator:
             avg_response_time_total = np_response_times_total.mean()
             interval_time = Simulator.STOP - Simulator.BIAS_PHASE
 
+            if any(stream_usage > MODULUS / STREAMS for stream_usage in self._stream_usage.values()):
+                logging.warning("The use of the RNG stream has exceeded the maximum limit!")
+                queue_input.put(input_replica)
+                input_replica = None
+                break
+
             queue_output.put("Results")
 
             # print(f"--- Risultati con SI_MAX = {SI_max} ---")
@@ -287,7 +303,7 @@ class Simulator:
             # print(f"Numero di Azioni di Scaling: {scaling_actions}")
             input_replica = queue_input.get()
             print(f"Queue Input Replica: {input_replica}")
-        print(f"Worker {worker_id} terminato.")
+        print(f"Worker {worker_id} terminato con stream usage {self._stream_usage}.")
 
 if __name__ == "__main__":
     sim = Simulator()

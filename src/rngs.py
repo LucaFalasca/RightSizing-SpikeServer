@@ -43,7 +43,7 @@ MULTIPLIER = 48271      #/* DON'T CHANGE THIS VALUE                  */
 CHECK = 399268537  #/* DON'T CHANGE THIS VALUE                  */
 STREAMS = 256        #/* # of streams, DON'T CHANGE THIS VALUE    */
 A256 = 22925      #/* jump multiplier, DON'T CHANGE THIS VALUE */
-DEFAULT = 123456789  #/* initial seed, use 0 < DEFAULT < MODULUS  */
+DEFAULT = 8  #/* initial seed, use 0 < DEFAULT < MODULUS  */
 
 #statics
 stream = 0

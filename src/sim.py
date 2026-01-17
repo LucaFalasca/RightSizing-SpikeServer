@@ -12,11 +12,16 @@ logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %
 # --- Classi per Statistiche e Tempi ---
 class Track:
     def __init__(self):
-        self.node_web = 0.0
-        self.node_spike = 0.0
+        self.area_node_web = 0.0
+        self.area_node_spike = 0.0
+
+        self.area_busy_web = 0.0
+        self.area_busy_spike = 0.0
+
         self.completed_web = 0
         self.completed_spike = 0
-        self.total_response_time = 0.0
+
+        self.scaling_actions = 0
 
 
 
@@ -179,15 +184,6 @@ class Simulator:
             time_to_next_arrival = self._GetArrival(arrival_stream)
             web_jobs = []
             spike_jobs = []
-            n_web_completed = 0
-            n_spike_completed = 0
-            busy_time_web = 0.0
-            busy_time_spike = 0.0
-
-            scaling_actions = 0
-
-            response_times_web = []
-            response_times_spike = []
 
         
             while (t < Simulator.STOP):
@@ -216,25 +212,21 @@ class Simulator:
                 )
                 logging.debug(f"Next Time Event at: {time_to_next_event}")
 
+                # Aggiorno le aree sotto le curve per calcolare le statistiche di utilizzo e numero di job
+                if t >= Simulator.BIAS_PHASE:
+                    area.area_node_web += len(web_jobs) * time_to_next_event
+                    area.area_node_spike += len(spike_jobs) * time_to_next_event
+
+                    if len(web_jobs) > 0:
+                        area.area_busy_web += time_to_next_event
+                    if len(spike_jobs) > 0:
+                        area.area_busy_spike += time_to_next_event
+
                 # A questo punto aggiorno il tempo rimanente di lavoro per ogni job in servizio in base al tempo trascorso
                 for job in web_jobs:
                     job.remaining_work -= time_to_next_event / len(web_jobs)  # Condivisione della CPU tra i job
                 for job in spike_jobs:
                     job.remaining_work -= time_to_next_event / len(spike_jobs)  # Condivisione della CPU tra i job
-
-                if len(web_jobs) > 0:
-                    logging.debug("Updated Remaining Work for Web Jobs:")
-                    for job in web_jobs:
-                        logging.debug(f"  Job Arrival: {job.arrival_time}, Remaining Work: {job.remaining_work}")
-                    
-                    busy_time_web += time_to_next_event 
-
-                if len(spike_jobs) > 0:
-                    logging.debug("Updated Remaining Work for Spike Jobs:")
-                    for job in spike_jobs:
-                        logging.debug(f"  Job Arrival: {job.arrival_time}, Remaining Work: {job.remaining_work}")
-
-                    busy_time_spike += time_to_next_event
 
                 # A questo punto processo l'evento
                 if min_work_web_job is not None and time_to_complete_web == time_to_next_event:
@@ -246,9 +238,9 @@ class Simulator:
                     time_to_next_arrival -= time_to_next_event
                     
                     # Aggiorno le statistiche
-                    n_web_completed += 1
-                    if t > Simulator.BIAS_PHASE: response_times_web.append(t + time_to_next_event - min_work_web_job.arrival_time)
-                    #TODO
+                    if t > Simulator.BIAS_PHASE: 
+                        area.completed_web += 1
+                        #TODO
                 elif min_work_spike_job is not None and time_to_complete_spike == time_to_next_event:
                     # Completamento di un job, lo leviamo dalla lista 
                     spike_jobs.remove(min_work_spike_job)
@@ -258,9 +250,9 @@ class Simulator:
                     time_to_next_arrival -= time_to_next_event
 
                     # Aggiorno le statistiche
-                    n_spike_completed += 1
-                    if t > Simulator.BIAS_PHASE: response_times_spike.append(t + time_to_next_event - min_work_spike_job.arrival_time)
-                    #TODO
+                    if t > Simulator.BIAS_PHASE: 
+                        area.completed_spike += 1
+                        #TODO
                 elif time_to_next_event == time_to_next_arrival:
                     # Arrivo di un nuovo job
                     is_spike = (len(web_jobs) >= SI_max)
@@ -268,7 +260,7 @@ class Simulator:
                     new_job = Simulator.Job(t, service_demand, is_spike)
                     if is_spike:
                         if len(spike_jobs) == 0:
-                            scaling_actions += 1
+                            area.scaling_actions += 1
                         spike_jobs.append(new_job)
                     else:
                         web_jobs.append(new_job)
@@ -295,25 +287,29 @@ class Simulator:
                 break
 
             # # --- Risultati Finali ---
-            total_jobs_completed = n_web_completed + n_spike_completed
-            np_response_times_web = np.array(response_times_web)
-            np_response_times_spike = np.array(response_times_spike)
-            avg_response_time_web = np_response_times_web.mean() if n_web_completed > 0 else None
-            avg_response_time_spike = np_response_times_spike.mean() if n_spike_completed > 0 else None
-            np_response_times_total = np.concatenate((np_response_times_web, np_response_times_spike))
-            avg_response_time_total = np_response_times_total.mean()
             interval_time = Simulator.STOP - Simulator.BIAS_PHASE
+            avg_interarrival = area.area_node_web / area.completed_web if area.completed_web > 0 else 0.0
+            total_jobs_completed = area.completed_web + area.completed_spike
+            avg_response_time_web = area.area_node_web / area.completed_web if area.completed_web > 0 else None
+            avg_response_time_spike = area.area_node_spike / area.completed_spike if area.completed_spike > 0 else None
+            avg_response_time_total = (area.area_node_web + area.area_node_spike) / total_jobs_completed if total_jobs_completed > 0 else None
+            utilization_web = area.area_busy_web / interval_time
+            utilization_spike = area.area_busy_spike / interval_time
+            throughput_web = area.completed_web / interval_time
+            throughput_spike = area.completed_spike / interval_time
+            throughput_total = total_jobs_completed / interval_time
+            
 
             replica_results = {
                 "web_response_time": avg_response_time_web,
                 "spike_response_time": avg_response_time_spike,
                 "total_response_time": avg_response_time_total,
-                "utilization_web": busy_time_web / interval_time,
-                "utilization_spike": busy_time_spike / interval_time,
-                "throughput_web": n_web_completed / interval_time,
-                "throughput_spike": n_spike_completed / interval_time,
-                "throughput_total": total_jobs_completed / interval_time,
-                "scaling_actions": scaling_actions
+                "utilization_web": utilization_web,
+                "utilization_spike": utilization_spike,
+                "throughput_web": throughput_web,
+                "throughput_spike": throughput_spike,
+                "throughput_total": throughput_total,
+                "scaling_actions": area.scaling_actions
             }
 
             queue_output.put(replica_results)

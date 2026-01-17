@@ -118,20 +118,20 @@ class Simulator:
             self.is_spike = is_spike
 
     def run(self):
-
-        queue_input = multiprocessing.Queue()
+        queue_input = [multiprocessing.Queue() for _ in range(Simulator.N_PROCESSES)]
         queue_output = multiprocessing.Queue()
 
         for replica in range(Simulator.REPLICAS):
-            queue_input.put(replica)
-            print(f"Replica #{replica} inviata al queue input")
+            target_queue = queue_input[replica % Simulator.N_PROCESSES]
+            target_queue.put(replica)
+            logging.debug(f"Replica #{replica} inviata al queue input")
 
         for worker in range(Simulator.N_PROCESSES):
-            queue_input.put(None)  # Segnali di terminazione
+            queue_input[worker].put(None)  # Segnali di terminazione
         
         processes = []
         for worker_id in range(Simulator.N_PROCESSES):
-            p = multiprocessing.Process(target=self._run, args=(worker_id, queue_input, queue_output, self._SI_max))
+            p = multiprocessing.Process(target=self._run, args=(worker_id, queue_input[worker_id], queue_output, self._SI_max))
             processes.append(p)
             p.start()
 

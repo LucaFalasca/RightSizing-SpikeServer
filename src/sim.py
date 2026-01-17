@@ -7,7 +7,7 @@ import multiprocessing
 from welford_stats import WelfordStats
 
 # Configurazione logging per debug
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s[%(levelname)s] - %(message)s', datefmt='%H:%M:%S')
 
 # --- Classi per Statistiche e Tempi ---
 class Track:
@@ -160,7 +160,7 @@ class Simulator:
                     stats[key].update(value)
                 
             if (i + 1) % 10 == 0:
-                print(f"Raccolte {i + 1}/{Simulator.REPLICAS} repliche...")
+                logging.info(f"Raccolte {i + 1}/{Simulator.REPLICAS} repliche...")
 
         for p in processes:
             p.join()
@@ -320,15 +320,15 @@ class Simulator:
 if __name__ == "__main__":
     sim = Simulator()
     parameters, stats = sim.run()
-    print("\nSimulazione completata con i seguenti parametri:")
+    logging.info("Simulazione completata con i seguenti parametri:")
     SI_max, arrival_mean, web_mean, spike_mean, cv = parameters
-    print(f"  SI_max: {SI_max}")
-    print(f"  Arrival Mean: {arrival_mean}")
-    print(f"  Web Mean: {web_mean}")
-    print(f"  Spike Mean: {spike_mean}")
-    print(f"  Coefficiente di Variazione: {cv}")
-    print("\nStatistiche raccolte con intervallo di confidenza al 95%:")
+    logging.info(f"  SI_max: {SI_max}")
+    logging.info(f"  Arrival Mean: {arrival_mean}")
+    logging.info(f"  Web Mean: {web_mean}")
+    logging.info(f"  Spike Mean: {spike_mean}")
+    logging.info(f"  Coefficiente di Variazione: {cv}")
+    logging.info("Statistiche raccolte con intervallo di confidenza al 95%:")
     for metric, w in stats.items():
         mean = w.mean
         ci = w.confidence_interval_95()
-        print(f"{metric:<25}: {mean:.4f} +/- {ci:.4f} (Var: {w.variance:.6f})")
+        logging.info(f"{metric:<25}: {mean:.4f} +/- {ci:.4f} (Var: {w.variance:.6f})")

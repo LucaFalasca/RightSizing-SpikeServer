@@ -4,3 +4,4 @@ docs/report.fls
 docs/report.fdb_latexmk
 docs/report.synctex.gz
 src/__pycache__/
+.conda/

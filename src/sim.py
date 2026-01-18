@@ -40,7 +40,7 @@ class Simulator:
         self._SI_max = 160                 # Soglia SI_max (da ottimizzare)
         self._arrival_mean = 0.15          # 400 req/min
         self._web_mean     = 0.16          
-        self._spike_mean   = 0.08          # Tasso doppio rispetto al web server 
+        self._spike_mean   = 0.16          # Tasso identico al web server
         self._cv           = 4.0           # Coefficiente di variazione richiesto 
         self._stream_usage = {}
         self.reset()

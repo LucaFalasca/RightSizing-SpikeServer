@@ -1,31 +1,7 @@
 \section{Obiettivi dello studio}
-Lo studio si pone l'obiettivo di analizzare e validare l'efficacia del modello di autoscaling gerarchico attraverso la simulazione. Gli obiettivi specifici sono:
+Lo studio si pone l'obiettivo di analizzare e validare l'efficacia del modello di autoscaling basato su spike server attraverso la simulazione. Gli obiettivi specifici sono:
 \begin{itemize}
-    \item identificare il valore di carico di lavoro che supera i tempi di risposta richiesti
-    \item Identificare il valore ottimale di SI\_max: Per un dato carico di lavoro (es. 40,000 richieste/ora), determinare il valore di SI\_max che minimizza il tempo di risposta medio del sistema o lo mantiene al di sotto di un valore target definito da un Service Level Agreement, come gli 8 secondi utilizzati nel libro.
-    \item Studiare il comportamento del sistema sotto carichi crescenti: Analizzare le prestazioni del sistema (in particolare il tempo di risposta) al variare del tasso di arrivo delle richieste (carico leggero, medio, pesante) utilizzando la soglia SI\_max.
-    \item Studiare il sistema con fluttuazioni a breve termine: Analizzare le prestazioni del sistema introducendo fluttuazioni a breve termine, utilizzando sempre la soglia SI\_max
-    \item Trovare due nuovi SI\_max per fluttuazioni a breve termine per rimanere sotto un certo tempo di risposta (8 secondi)
-\end{itemize}
-
-
-
-
-
-\subsection{Obiettivi 2}
-Gli obiettivi specifici sono: 
-\begin{itemize} 
-    \item \textbf{Valutazione della capacità nominale}: Identificare il limite critico del carico di lavoro (tasso di arrivo) che porta alla violazione dei tempi di risposta definiti dagli SLA in assenza di meccanismi di scaling. 
-    \item \textbf{Ottimizzazione della soglia SImax}: Determinare il valore ottimale dello \textit{Spike Indicator} (SI) — inteso come numero totale di job nel sistema (in coda e in servizio) — che minimizzi il tempo di risposta medio o lo mantenga entro il target di 8 secondi per un carico di lavoro di riferimento (es. 40.000 richieste/ora). 
-    \item \textbf{Analisi di sensibilità sotto carichi crescenti}: Studiare le prestazioni del sistema al variare del tasso di arrivo per testare la stabilità della soglia SImax in scenari di carico leggero, medio e pesante. 
-    \item \textbf{Analisi della robustezza ai picchi (\textit{Burstiness})}: Valutare l'efficacia dello \textit{Spike Server} (risorsa tipicamente più performante del Web Server principale) nel gestire fluttuazioni di carico a breve termine modellate tramite distribuzioni iperesponenziali. 
-    \item \textbf{Ottimizzazione dinamica per scenari di picco}: Identificare valori specifici di SImax capaci di garantire il rispetto degli SLA anche in presenza di diverse intensità di picco improvviso, confrontando l'efficacia della soglia fissa rispetto a scenari di carico variabile. 
-\end{itemize}
-
-\subsection{Obiettivi 3}
-Gli obiettivi specifici sono:
-\begin{itemize}
-    \item Determinare il valore di SI\_max più alto possibile (provando vari valori di SI) che mantenga comunque il tempo di risposta medio \[E[R] \leq 8\] secondi, con un tasso di arrivo iperesponenziale con media di 40,000 richieste/ora.
-    \item Analizzare come varia il tempo di risposta medio al variare del coefficiente di variazione degli arrivi iperesponenziali (fluttuazioni a breve termine) mantenendo il tasso di arrivo medio a 40,000 richieste/ora e utilizzando il valore di SI\_max trovato nel punto precedente.
-    \item Verificare come cambia il contesto se lo spike server ha un tasso di servizio triplo rispetto al webserver principale, invece che doppio come nel caso base.
+    \item Determinare il valore di SI\_max più alto possibile (provando vari valori di SI) che mantenga comunque il tempo di risposta medio \[E[R] \leq 8\] secondi, con un tasso di arrivo iperesponenziale con media di 6.66 req/s (400 req/min).
+    \item Analizzare come varia il tempo di risposta medio al variare del coefficiente di variazione degli arrivi iperesponenziali (fluttuazioni a breve termine) per carichi di lavoro crescenti (da 1 req/s a 12 req/s).
+    \item Verificare come cambia il contesto (sempre sotto carichi crescenti e al variare di SI\_max) se lo spike server ha un tasso di servizio doppio rispetto al webserver principale, invece che uguale come nel caso base.
 \end{itemize}

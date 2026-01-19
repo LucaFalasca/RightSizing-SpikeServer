@@ -2,35 +2,26 @@
 
 Componenti fisici del sistema:
 \begin{itemize}
-    \item Web server principale
-    \item Spike server
+    \item Web server principale: server principale che gestisce le richieste in arrivo.
+    \item Spike server: server secondario che viene attivato quando il carico sul web server principale supera una certa soglia (SI\_max).
 \end{itemize}
 Componenti logici del sistema:
 \begin{itemize}
-    \item Load Controller
+    \item Load Controller: componente che monitora l'indicatore di picco (Spike Indicator, SI) e decide il routing delle richieste in base al valore di SI e alla soglia SI\_max.
 \end{itemize}
 
 Specifiche del carico di lavoro:
 \begin{itemize}
-    \item Arrivi: Processo di arrivo iperesponenziale con cv = 4 e media 0.15 secondi (40,000 richieste/ora)
-    \item Servizio: Distribuzione iperesponenziale con cv = 4 e media 0.16 secondi (web server), media 0.08 secondi (spike server)
+    \item Arrivi: Processo di arrivo iperesponenziale con cv = 4 e media 0.15 secondi 
+    \item Servizio: Distribuzione iperesponenziale con cv = 4 e media 0.16 secondi (web server e spike server), media 0.08 secondi (spike server nell'obiettivo 3)
     \item Scheduling: Processor Sharing
 \end{itemize}
-
-
-Classi di clienti:
-\begin{itemize}
-    \item Arrivi normali
-    \item Token: sono gettoni di controllo che servono al Load Controller. C'è un numero fisso di token (SI\_max). Ogni volta che arriva una richiesta, se ci sono token disponibili, ne viene consumato uno e la richiesta viene inviata al webserver principale. Se non ci sono token disponibili, la richiesta viene inviata allo spike server. Quando una richiesta termina il servizio, il token viene restituito al Load Controller.
-\end{itemize}
-
 
 Logica di controllo:
 \begin{itemize}
     \item Se \(SI < SI\_max\): invia al webserver principale
     \item Se \(SI \geq SI\_max\): invia allo spike server
 \end{itemize}
-
 
 Gestione della fine della simulazione:
 Dato che il sistema viene studiato in un stato transitorio, esso fa riferimento ad un orizzonte temporale prefissato che va dai 120 secondi (per eliminare il bias della fase iniziale in cui le code sono ancora vuote) ai 1200 secondi di simulazione. Questo viene fatto nel report di riferimento e quindi per confrontare al meglio i risultati si è deciso di adottare lo stesso approccio. Inoltre, non verrà fatta allo scadere del tempo di simulazione una pulizia delle code, ma si considereranno solo i job completati entro il tempo di simulazione.

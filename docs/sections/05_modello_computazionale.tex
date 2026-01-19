@@ -21,10 +21,10 @@ Ogni volta che arriva un nuovo job:
     \item Se \(SI > SI\_max\), viene incrementato n\_spike di 1 e il job viene inviato allo spike server.
 \end{itemize} 
 
-Ogni volta che job termina decremenenta il corrispettivo contatore restituendo il token.
+Ogni volta che job termina decremenenta il valore di SI.
 
 \subsection{Implementazione dello scheduler}
-Al contrario di quanto avviene nel caso di studio di riferimento in cui si usa uno scheduling processor sharing, in questo progetto userò uno scheduling FIFO per entrambi i server.
+Al contrario di quanto avviene nel caso di studio di riferimento in cui si usa uno scheduling processor sharing.
 
 
 \subsection{Configurazione dei parametri delle distribuzioni}
@@ -33,6 +33,9 @@ Al contrario di quanto avviene nel caso di studio di riferimento in cui si usa u
     \item Stream 1: Servizio Web Server (Iperesponenziale, media 0.16s, cv=4).
     \item Stream 2: Servizio Spike Server (Iperesponenziale, media 0.08s, cv=4).
 \end{itemize}
+
+
+
 
     
 

@@ -4,23 +4,33 @@
 \usepackage{float}
 \usepackage{microtype}
 \usepackage{listings}
+\usepackage[a4paper,
+            top=3cm,
+            bottom=3cm,
+            inner=3cm,      % Margine interno (lato rilegatura)
+            outer=2cm,      % Margine esterno
+            bindingoffset=0.5cm % Spazio extra per la rilegatura fisica
+            ]{geometry}
 
 \title{RightSizing-SpikeServer}
+
 \author{}
 \date{}
 
 \begin{document}
 
 \maketitle
-
+\tableofcontents
+\clearpage
 \input{sections/01_case_study.tex}
 
 \input{sections/02_obiettivi.tex}
-
 \input{sections/03_modello_concettuale.tex}
 
 \input{sections/04_modello_specifiche.tex}
 
 \input{sections/05_modello_computazionale.tex}
+
+\input{sections/06_verifica.tex}
 
 \end{document}

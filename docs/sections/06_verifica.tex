@@ -1,0 +1,57 @@
+\section{Verifica}
+Ci sono varie verifiche che si possono fare andando a controllare se tutta una serie di caratteristiche volute si riflettano veramente nel modello simulativo costruito e quindi nei risultati ottenuti. In particolare, andrò ad effettuare le seguenti verifiche:
+\begin{itemize}
+    \item Verifica del corretto funzionamento di routing basato su soglia si \(SI_{max}\).
+    \begin{itemize}
+        \item Controllo che impostando \(SI_{max}=0\) venga utilizzato solo lo spike server.
+        \item Controllo che impostando \(SI_{max}=\infty\) non venga mai utilizzato lo spike server.
+    \end{itemize}
+    \item Verifica delle metriche prestazionali:
+    \begin{itemize}
+        \item Verifico che aumentando \(SI_{max}\) l'utilizzazione del web server aumenta
+        \item Verifico che il throughput sia pari al tasso di arrivo quando il sistema è stabile e uguale al tasso di servizio quando il sistema è sovraccarico.
+    \end{itemize}
+    \item Verifica leggi operazionali
+    \begin{itemize}
+        \item Verifica della legge di little: \(E[N] = \lambda E[R]\)
+    \end{itemize}
+    \item Verifica della distribuzione
+    \begin{itemize}
+        \item Verifica che media e cv della distribuzione iperesponenziale corrispondano ai valori impostati.
+    \end{itemize}
+\end{itemize}
+    
+\subsection{Verifica del routing basato su soglia \(SI_{max}\)}
+\subsubsection{Verifica con \(SI_{max}=0\)}
+Impostando \(SI_{max}=0\) si può verificare che tutti i job vengano instradati allo spike server. Infatti, come mostrato in figura \ref{fig:verifica_si_0}, l'utilizzazione del web server è nulla, mentre tutto il carico viene gestito dallo spike server.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/verifica_si_0.png}
+    \caption{Verifica routing con \(SI_{max}=0\)}
+    \label{fig:verifica_si_0}
+\end{figure}
+\subsubsection{Verifica con \(SI_{max}=\infty\)}
+Impostando \(SI_{max}=\infty\) si può verificare che nessun job venga instradato allo spike server. Infatti, come mostrato in figura \ref{fig:verifica_si_inf}, l'utilizzazione dello spike server è nulla, mentre tutto il carico viene gestito dal web server.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/verifica_si_inf.png}
+    \caption{Verifica routing con \(SI_{max}=\infty\)}
+    \label{fig:verifica_si_inf}
+\end{figure}
+
+\subsection{Verifica delle metriche prestazionali}
+\subsubsection{Verifica dell'utilizzazione al variare di \(SI_{max}\)}
+Impostando un carico di lavoro fisso e variando il valore di \(SI_{max}\), si può verificare che l'utilizzazione del web server aumenti al crescere di \(SI_{max}\), come mostrato in figura \ref{fig:verifica_utilizzazione_si}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/verifica_utilizzazione_si.png}
+    \caption{Verifica dell'utilizzazione del web server al variare di \(SI_{max}\)}
+    \label{fig:verifica_utilizzazione_si}
+\end{figure}
+
+\subsubsection{Verifica del throughput}
+
+

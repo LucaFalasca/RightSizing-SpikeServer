@@ -37,7 +37,7 @@ class Simulator:
 
     def __init__(self):
         # --- Parametri del Modello di default ---
-        self._SI_max = 160                 # Soglia SI_max (da ottimizzare)
+        self._SI_max = Simulator.INFINITY                 # Soglia SI_max (da ottimizzare)
         self._arrival_mean = 0.15          # 400 req/min
         self._web_mean     = 0.16          
         self._spike_mean   = 0.16          # Tasso identico al web server

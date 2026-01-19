@@ -1,7 +1,7 @@
 \section{Obiettivi dello studio}
 Lo studio si pone l'obiettivo di analizzare e validare l'efficacia del modello di autoscaling basato su spike server attraverso la simulazione. Gli obiettivi specifici sono:
 \begin{itemize}
-    \item Determinare il valore di SI\_max più alto possibile (provando vari valori di SI) che mantenga comunque il tempo di risposta medio \[E[R] \leq 8\] secondi, con un tasso di arrivo iperesponenziale con media di 6.66 req/s (400 req/min).
+    \item Determinare il valore di SI\_max più alto possibile (provando vari valori di SI) che mantenga comunque il tempo di risposta medio \(E[R] \leq 8\) secondi, con un tasso di arrivo iperesponenziale con media di 6.66 req/s (400 req/min).
     \item Analizzare come varia il tempo di risposta medio al variare del coefficiente di variazione degli arrivi iperesponenziali (fluttuazioni a breve termine) per carichi di lavoro crescenti (da 1 req/s a 12 req/s).
     \item Verificare come cambia il contesto (sempre sotto carichi crescenti e al variare di SI\_max) se lo spike server ha un tasso di servizio doppio rispetto al webserver principale, invece che uguale come nel caso base.
 \end{itemize}

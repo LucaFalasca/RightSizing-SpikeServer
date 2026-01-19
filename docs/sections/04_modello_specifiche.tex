@@ -1,21 +1,21 @@
 \section{Modello delle specifiche}
 Queste variabili matematiche, sono la rappresentazione dello stato del sistema:
 \begin{itemize}
-    \item \(SI(t)\): Spike indicator, indica il numero di job presenti nel web server al tempo t.
-    \item \(n_spike(t)\): numero di job presenti nello spike server al tempo t.
+    \item \(SI(t) \in [0, SI_{max})\): Spike indicator, indica il numero di job presenti nel web server al tempo t.
+    \item \(n_{spike}(t) \in [0, \infty)\): numero di job presenti nello spike server al tempo t.
 \end{itemize}
 
-per cui lo stato del sistema è definito come \(S(t) = (SI(t), n_spike(t))\).
+per cui lo stato del sistema è definito come la tupla \(S(t) = (SI(t), n_{spike}(t))\).
 
 
 \subsection{Componenti fisici del sistema: }
 \begin{itemize}
     \item Web server principale: server principale che gestisce le richieste in arrivo.
-    \item Spike server: server secondario che viene attivato quando il carico sul web server principale supera una certa soglia (SI\_max).
+    \item Spike server: server secondario che viene attivato quando il carico sul web server principale supera una certa soglia (\(SI_{max}\)).
 \end{itemize}
 Componenti logici del sistema:
 \begin{itemize}
-    \item Load Controller: componente che monitora l'indicatore di picco (Spike Indicator, SI) e decide il routing delle richieste in base al valore di SI e alla soglia SI\_max.
+    \item Load Controller: componente che monitora l'indicatore di picco (Spike Indicator, SI) e decide il routing delle richieste in base al valore di SI e alla soglia \(SI_{max}\).
 \end{itemize}
 
 \subsection{Specifiche del carico di lavoro:}
@@ -34,8 +34,8 @@ Vale la pena notare che, nel caso base del webserver, siccome \(\rho > 1\), il s
 \begin{itemize}
     \item Arrivi nuovi job:
         \begin{itemize}
-            \item Se \(SI < SI\_max\): invia al webserver principale
-            \item Se \(SI \geq SI\_max\): invia allo spike server
+            \item Se \(SI < SI_{max}\): invia al webserver principale
+            \item Se \(SI \geq SI_{max}\): invia allo spike server
         \end{itemize}
     \item Completamento job:
         \begin{itemize}
@@ -43,7 +43,7 @@ Vale la pena notare che, nel caso base del webserver, siccome \(\rho > 1\), il s
             \item Decrementa il contatore n\_spike se il job era nello spike server
         \end{itemize}
 \end{itemize}
-Nella logica originale del caso di studio, il valore di SI parte da SI\_max e viene decrementato ad ogni completamento di un job. La logica da me adottata, nonostante sia inversa, è perfettamente equivalente.
+Nella logica originale del caso di studio, il valore di SI parte da \(SI_{max}\) e viene decrementato ad ogni completamento di un job. La logica da me adottata, nonostante sia inversa, è perfettamente equivalente.
 
 \subsection{Metrica di valutazione delle prestazioni:}
 Lo SLA da rispettare è un tempo di risposta medio \(E[R] \leq 8\) secondi.

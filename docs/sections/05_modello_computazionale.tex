@@ -1,11 +1,33 @@
 \section{Modello Computazionale}
-
+Il sistema di simulazione è implementato in Python e segue un modello ad eventi discreti. Sono state utilizzate alcuni file della libreria di Steve Park \& Dave Geyer, tradotti in python da Philip Steele. In particolare sono state utilizzate le librerie per la generazione di numeri casuali per il multistream (rngs.py) e per le distribuzioni (rvgs.py).
 \subsection{Stato del sistema}
-
+Le variabili di programmazione che rappresentano lo stato del sistema sono:
 \begin{itemize}
-    \item SI: Spike indicator (numero di job nel web server)
-    \item n\_spike: numero di job nello spike server
+    \item web\_jobs : list: è una lista che contiene i job in fase di processamento nel web server, la sua lunghezza rappresenta l'indicatore SI
+    \item spike\_jobs : list: è una lista che contiene i job in fase di processamento nello spike server.
 \end{itemize}
+
+\subsection{Descrizione del job}
+Ogni job è rappresentato da una classe Job:
+\begin{lstlisting}[language=Python,frame=single,breaklines=true]
+class Job:
+    def __init__(self, 
+                arrival_time, 
+                service_demand, 
+                is_spike=False):
+        self.arrival_time = arrival_time
+        self.service_demand = service_demand
+        self.remaining_work = service_demand
+        self.is_spike = is_spike
+\end{lstlisting}
+Dove:
+\begin{itemize}
+    \item arrival\_time: tempo di arrivo del job
+    \item service\_demand: tempo di servizio totale richiesto dal job
+    \item remaining\_work: lavoro rimanente da completare (utile per lo scheduling processor sharing)
+    \item is\_spike: booleano che indica se il job è stato assegnato allo spike server
+\end{itemize}
+
 
 \subsection{Identificazione degli eventi}
 \begin{itemize}
@@ -17,15 +39,13 @@
 \subsection{Logica di controllo e routing}
 Ogni volta che arriva un nuovo job:
 \begin{itemize}
-    \item Se \(SI \leq SI\_max\), viene incrementato SI di 1 e il job viene inviato al web server.
-    \item Se \(SI > SI\_max\), viene incrementato n\_spike di 1 e il job viene inviato allo spike server.
+    \item Se \(\mathrm{len}(web\_jobs) \leq SI_{max}\), il job viene aggiunto a web\_jobs.
+    \item Se \(\mathrm{len}(web\_jobs) > SI_{max}\), il job viene aggiunto a spike\_jobs.
 \end{itemize} 
-
-Ogni volta che job termina decremenenta il valore di SI.
+Ogni volta che job completa rimuove dalla lista corrispondente il job (web\_jobs o spike\_jobs).
 
 \subsection{Implementazione dello scheduler}
 Al contrario di quanto avviene nel caso di studio di riferimento in cui si usa uno scheduling processor sharing.
-
 
 \subsection{Configurazione dei parametri delle distribuzioni}
 \begin{itemize}
@@ -33,6 +53,123 @@ Al contrario di quanto avviene nel caso di studio di riferimento in cui si usa u
     \item Stream 1: Servizio Web Server (Iperesponenziale, media 0.16s, cv=4).
     \item Stream 2: Servizio Spike Server (Iperesponenziale, media 0.08s, cv=4).
 \end{itemize}
+
+La distribuzione iperesponenziale è stata implementata utilizzando l'esponenziale e l'uniforme della libreria rvgs.py. Con l'uniforme calcoliamo la probabilità di scegliere una delle due esponenziali, e con l'esponenziale calcoliamo il servizio vero e proprio (Figura \ref{fig:hyperexponential}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/hyperexponential.png}  
+    \caption{Generazione di una variabile casuale iperesponenziale}
+    \label{fig:hyperexponential}
+\end{figure}
+In particolare date in input la media e il coefficiente di variazione \(cv\). Sapendo che \(g(p) = cv^2\), possiamo calcolare \(p_1\), \(p_2\), \(m_1\) e \(m_2\) come:
+\[c = \frac{cv^2 - 1}{cv^2 + 1}\]
+\[p_1 = \frac{1 + c}{2}\]
+\[p_2 = 1 - p_1\]
+\[m_1 = \frac{mean}{2 \cdot p_1}\]
+\[m_2 = \frac{mean}{2 \cdot p_2}\]
+e quindi utilizzare un semplice if per scegliere quale esponenziale utilizzare in base ad un campione uniforme:
+\begin{lstlisting}[language=Python,frame=single,breaklines=true]
+u = Uniform(0,1)
+if u < p1:
+    return Exponential(m1)
+else:
+    return Exponential(m2)
+\end{lstlisting}
+Da notare che per ogni campionamento dell'esponenziale si utilizzano, quindi, due estrazioni dallo stream del generatore di numeri casuali.
+
+\subsection{Struttura del simulatore}
+Il simulatore è strutturato come una classe Simulator che gestisce l'inizializzazione, l'esecuzione e la raccolta delle metriche della simulazione. La classe ha una serie di costanti di configurazione: 
+\begin{lstlisting}[language=Python,frame=single,breaklines=true]
+START       = 0.0
+BIAS_PHASE  = 120.0         
+STOP        = 1200.0         
+INFINITY    = 1e15
+SEED        = 8
+REPLICAS    = 100
+N_PROCESSES = 12
+\end{lstlisting}
+Dove:
+\begin{itemize}
+    \item START: tempo di inizio della simulazione
+    \item BIAS\_PHASE: durata della fase transitoria (120 secondi)
+    \item STOP: tempo di fine della simulazione (1200 secondi)
+    \item INFINITY: un valore molto grande usato per inizializzare i tempi di evento (deve essere molto più grande di STOP)
+    \item SEED: seme per il generatore di numeri casuali, che è stato utilizzato insieme alla libreria rngs.py per tutti i generatori di numeri casuali
+    \item REPLICAS: numero di repliche della simulazione (100 repliche)
+    \item N\_PROCESSES: numero di processi paralleli per l'esecuzione delle repliche (12 processi)
+\end{itemize}
+
+\subsubsection{Parallelismo}
+Per velocizzare l'esecuzione delle repliche della simulazione, è stata implementata una logica di multiprocessing per sfruttare tutti i core della mia CPU disponibili. Tuttavia per farlo ho dovuto prendere alcune accortezze che permettessero di non minare nè l'indipendenza delle repliche nè la riproducibilità dei risultati. In particolare:
+\begin{itemize}
+    \item ad ogni processo vengono assegnati 3 stream dei 256 disponibili, in modo che ogni processo abbia il proprio spazio di numeri casuali indipendenti dagli altri processi, ma in maniera tale che potessero procedere in parallelo senza che la non deterministicità del parallelismo influisse sull'ordine di estrazione dei numeri casuali.
+    \item Per il numero di repliche introdotte, ogni processo non si avvicinava nemmeno lontanamente al limite dello stream assegnato. \[MODULUS / STREAM \approx 8388607\] Ho comunque implementato un meccanismo in cui una volta sforato il limite dello stream, gli venivano assegnati 3 nuovi stream. Ed essendo il numero di processi 12, e ogni processo usa 3 stream, questo è tranquillamente possibile senza sforare il limite dei 256 stream e senza ulteriori meccanismi di controllo.
+    \item Sempre per garantire la riproducibilità dei risultati, ad ogni processo vengono assegnate sempre lo stesso numero di repliche da eseguire, in modo tale che le ultime repliche non vengano eseguite da processi diversi (e quindi strem diversi) in base all'assegnazione dinamica di essi.
+\end{itemize}
+
+\subsection{Raccolta delle metriche}
+Per raccogliere le metriche è stata utilizzata una classe Track:
+\begin{lstlisting}[language=Python,frame=single,breaklines=true]
+class Track:
+    def __init__(self):
+        self.area_node_web = 0.0
+        self.area_node_spike = 0.0
+
+        self.area_busy_web = 0.0
+        self.area_busy_spike = 0.0
+
+        self.completed_web = 0
+        self.completed_spike = 0
+
+        self.scaling_actions = 0
+\end{lstlisting}
+Dove:
+\begin{itemize}
+    \item area\_node\_web: area sotto la curva del numero di job nel web server \[ \int_{BIAS\_PHASE}^{STOP} N_{web}(t)dt \]
+    \item area\_node\_spike: area sotto la curva del numero di job nello spike server \[ \int_{BIAS\_PHASE}^{STOP} N_{spike}(t)dt \]
+    \item area\_busy\_web: area sotto la curva del tempo di utilizzo del web server \[ \int_{BIAS\_PHASE}^{STOP} U_{web}(t)dt \]
+    \item area\_busy\_spike: area sotto la curva del tempo di utilizzo dello spike server \[ \int_{BIAS\_PHASE}^{STOP} U_{spike}(t)dt \]
+    \item completed\_web: numero di job completati nel web server 
+    \item completed\_spike: numero di job completati nello spike server
+    \item scaling\_actions: numero di azioni di scaling (numero di volte in cui lo spike server è stato attivato)
+\end{itemize}
+Gli integrali sono calcolati ad ogni evento in maniera incrementale durante la simulazione.
+
+Le metriche finali raccolte sono state:
+\begin{itemize}
+    \item \textbf{web\_response\_time}: tempo di risposta medio nel web server calcolato come l'integrale del numero di job completati nel web server diviso per il numero di job completati nel web server \[ \frac{area\_node\_web}{completed\_web} \]
+    \item \textbf{spike\_response\_time}: tempo di risposta medio nello spike server \[ \frac{area\_node\_spike}{completed\_spike} \]
+    \item \textbf{total\_response\_time}: tempo di risposta medio totale \[ \frac{area\_node\_web + area\_node\_spike}{completed\_web + completed\_spike} \]
+    \item \textbf{utilization\_web}: utilizzo medio del web server \[ \frac{area\_busy\_web}{STOP - BIAS\_PHASE} \]
+    \item \textbf{utilization\_spike}: utilizzo medio dello spike server \[ \frac{area\_busy\_spike}{STOP - BIAS\_PHASE} \] 
+    \item \textbf{throughput\_web}: throughput medio del web server \[ \frac{completed\_web}{STOP - BIAS\_PHASE} \]
+    \item \textbf{throughput\_spike}: throughput medio dello spike server \[ \frac{completed\_spike}{STOP - BIAS\_PHASE} \]
+    \item \textbf{throughput\_total}: throughput medio totale \[ \frac{completed\_web + completed\_spike}{STOP - BIAS\_PHASE} \]
+    \item \textbf{scaling\_actions}: numero di azioni di scaling
+\end{itemize}
+
+Per quanto riguarda le metriche finali su tutte le repliche, è stato utilizzato l'algoritmo di Welford per il calcolo delle medie e varianze e poi degli intervalli di confidenza al 95\%.
+
+\subsection{Scheduler}
+Siccome lo scheduler è di tipo processor sharing, il tempo prima del prossimo evento da schedulare è calcolato come:
+\[min\{next\_arrival, time\_to\_complete\_web\_job, time\_to\_complete\_spike\_job\}\]
+Dove:
+\begin{itemize}
+    \item next\_arrival: tempo rimanente al prossimo arrivo
+    \item time\_to\_complete\_web\_job: tempo rimanente al completamento del job con il minor lavoro rimanente nel web server
+    \item time\_to\_complete\_spike\_job: tempo rimanente al completamento del job con il minor lavoro rimanente nello spike server
+\end{itemize}
+Per calcolare i tempi rimanenti al completamento dei job, non basta trovare il job con il minor lavoro rimanente, perché essendo in processor sharing il tempo di completamento dipende anche dal numero di job in servizio. Quindi il tempo di completamento del job con il minor lavoro rimanente è calcolato come:
+\[time\_to\_complete\_web\_job = min\_remaining\_work \times len(web\_jobs)\]
+\[time\_to\_complete\_spike\_job = min\_remaining\_work \times len(spike\_jobs)\]
+Una volta trovato il tempo del prossimo evento, si avanza il tempo di simulazione di tale intervallo e si aggiorna il lavoro rimanente di tutti i job in servizio sottraendo il lavoro svolto in tale intervallo:
+\[j.remaining\_work = j.remaining\_work - \frac{time\_advance}{len(web\_jobs)}  \forall j \in web\_jobs\]
+\[j.remaining\_work = j.remaining\_work - \frac{time\_advance}{len(spike\_jobs)} \forall j \in spike\_jobs\]
+
+
+
+
+
 
 
 

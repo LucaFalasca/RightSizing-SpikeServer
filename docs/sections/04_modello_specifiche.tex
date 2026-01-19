@@ -1,6 +1,12 @@
 \section{Modello delle specifiche}
+Queste variabili matematiche, sono la rappresentazione dello stato del sistema:
+\begin{itemize}
+    \item \(SI(t)\): Spike indicator, indica il numero di job presenti nel web server al tempo t.
+    \item \(n_spike(t)\): numero di job presenti nello spike server al tempo t.
+    \end{itemize}
 
-Componenti fisici del sistema:
+
+\subsection{Componenti fisici del sistema: }
 \begin{itemize}
     \item Web server principale: server principale che gestisce le richieste in arrivo.
     \item Spike server: server secondario che viene attivato quando il carico sul web server principale supera una certa soglia (SI\_max).
@@ -10,18 +16,35 @@ Componenti logici del sistema:
     \item Load Controller: componente che monitora l'indicatore di picco (Spike Indicator, SI) e decide il routing delle richieste in base al valore di SI e alla soglia SI\_max.
 \end{itemize}
 
-Specifiche del carico di lavoro:
+\subsection{Specifiche del carico di lavoro:}
 \begin{itemize}
-    \item Arrivi: Processo di arrivo iperesponenziale con cv = 4 e media 0.15 secondi 
+    \item Arrivi: 
+        \begin{itemize}
+            \item Valore base: Processo di arrivo iperesponenziale con cv = 4 e media 0.15 secondi (6.66 req/s)
+            \item Valore stress: Processo di arrivo iperesponenziale con carico variabile da 1 req/s a 12 req/s
+        \end{itemize}
     \item Servizio: Distribuzione iperesponenziale con cv = 4 e media 0.16 secondi (web server e spike server), media 0.08 secondi (spike server nell'obiettivo 3)
     \item Scheduling: Processor Sharing
 \end{itemize}
+Vale la pena notare che, nel caso base del webserver, siccome \(\rho > 1\), il sistema è instabile e senza spike server il tempo di risposta divergerebbe a infinito.
 
-Logica di controllo:
+\subsection{Logica di controllo:}
 \begin{itemize}
-    \item Se \(SI < SI\_max\): invia al webserver principale
-    \item Se \(SI \geq SI\_max\): invia allo spike server
+    \item Arrivi nuovi job:
+        \begin{itemize}
+            \item Se \(SI < SI\_max\): invia al webserver principale
+            \item Se \(SI \geq SI\_max\): invia allo spike server
+        \end{itemize}
+    \item Completamento job:
+        \begin{itemize}
+            \item Decrementa il contatore SI se il job era nel webserver principale
+            \item Decrementa il contatore n\_spike se il job era nello spike server
+        \end{itemize}
 \end{itemize}
+Nella logica originale del caso di studio, il valore di SI parte da SI\_max e viene decrementato ad ogni completamento di un job. La logica da me adottata, nonostante sia inversa, è perfettamente equivalente.
 
-Gestione della fine della simulazione:
-Dato che il sistema viene studiato in un stato transitorio, esso fa riferimento ad un orizzonte temporale prefissato che va dai 120 secondi (per eliminare il bias della fase iniziale in cui le code sono ancora vuote) ai 1200 secondi di simulazione. Questo viene fatto nel report di riferimento e quindi per confrontare al meglio i risultati si è deciso di adottare lo stesso approccio. Inoltre, non verrà fatta allo scadere del tempo di simulazione una pulizia delle code, ma si considereranno solo i job completati entro il tempo di simulazione.
+\subsection{Metrica di valutazione delle prestazioni:}
+Lo SLA da rispettare è un tempo di risposta medio \(E[R] \leq 8\) secondi.
+
+\subsection{Gestione della fine della simulazione:}
+Dato che il sistema viene studiato a regime, esso fa riferimento ad un orizzonte temporale prefissato che va dai 120 secondi (per eliminare il bias della fase transitoria in cui le code sono ancora vuote) ai 1200 secondi di simulazione. Questo viene fatto nel report di riferimento e quindi per confrontare al meglio i risultati si è deciso di adottare lo stesso approccio. Inoltre, non verrà fatta allo scadere del tempo di simulazione una pulizia delle code, ma si considereranno solo i job completati entro il tempo di simulazione, per il calcolo delle metriche medie aggregate (es. R0), coerentemente con l'approccio adottato nel caso di studio di riferimento.

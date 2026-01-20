@@ -55,7 +55,6 @@ Impostando un carico di lavoro fisso e variando il valore di \(SI_{max}\), si pu
 \begin{table}[h!]
   \begin{center}
     \caption{Verifica dell'utilizzazione del web server al variare di \(SI_{max}\)}
-    \label{table1}
     \pgfplotstabletypeset[
       multicolumn names, % allows to have multicolumn names
       col sep=comma, % the seperator in our .csv file
@@ -99,12 +98,11 @@ Se invece calcoliamo il throughput a partire dall'utilizzazione come \( X = U * 
 \begin{table}[h!]
   \begin{center}
     \caption{Verifica del Throughput}
-    \label{table2}
     \pgfplotstabletypeset[
       multicolumn names, % allows to have multicolumn names
       col sep=comma, % the seperator in our .csv file
       display columns/0/.style={
-        column name={$SI_{max}$},
+        column name={$\lambda$},
         column type={S[round-mode=places, round-precision=0]},string type},  % use siunitx for formatting
       display columns/1/.style={
         column name={$X_{measured}$},

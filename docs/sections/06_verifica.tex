@@ -52,6 +52,86 @@ Impostando un carico di lavoro fisso e variando il valore di \(SI_{max}\), si pu
     \label{fig:verifica_utilizzazione_si}
 \end{figure}
 
+\begin{table}[h!]
+  \begin{center}
+    \caption{Verifica dell'utilizzazione del web server al variare di \(SI_{max}\)}
+    \label{table1}
+    \pgfplotstabletypeset[
+      multicolumn names, % allows to have multicolumn names
+      col sep=comma, % the seperator in our .csv file
+      display columns/0/.style={
+        column name={$SI_{max}$},
+        column type={S[round-mode=places, round-precision=0]},string type},  % use siunitx for formatting
+      display columns/1/.style={
+        column name={$\text{U}_{web}$},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      display columns/2/.style={
+        column name={$\text{U}_{web}$ CI95},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      every head row/.style={
+        before row={\toprule}, % have a rule at top
+        after row={\midrule}, % rule under units
+            },
+        every last row/.style={after row=\bottomrule}, % rule at bottom
+    ]{data_tables/graph_data_si_max.csv} % filename/path to file
+  \end{center}
+\end{table}
+
 \subsubsection{Verifica del throughput}
+Variando il carico di lavoro da 1 req/s a 12 req/s e impostando \(SI_{max} = \infty\), in modo da misurare solo il web server, si può verificare che il throughput del sistema non superi mai il suo limite teorico, che nel caso considerato è uguale a \(min(\mu_{web}, \lambda_{web}) \). Tuttavia dalla figura \ref{fig:wrong_throughput} si nota come il throughput misurato superi il valore teorico per carichi di lavoro elevati. Andando ad investigare il problema, il problema era dovuto dalla gestione di fine simulazione. Infatti, siccome alla fine della simulazione le code non vengono svuotate ci sono tutta una serie di job ancora in coda che non vengono considerati nella metrica di throughput, calcolata come \( num\_completed / sim\_time \). 
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/wrong_throughput.png}
+    \caption{Throughput misurato che supera il valore teorico}
+    \label{fig:wrong_throughput}
+\end{figure}
 
+Se invece calcoliamo il throughput a partire dall'utilizzazione come \( X = U * \mu \), otteniamo i risultati mostrati in figura \ref{fig:correct_throughput}, dove si può notare come il throughput misurato sia sempre inferiore al valore teorico.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/correct_throughput.png}
+    \caption{Throughput calcolato a partire dall'utilizzazione}
+    \label{fig:correct_throughput}
+\end{figure}
+
+\begin{table}[h!]
+  \begin{center}
+    \caption{Verifica del Throughput}
+    \label{table2}
+    \pgfplotstabletypeset[
+      multicolumn names, % allows to have multicolumn names
+      col sep=comma, % the seperator in our .csv file
+      display columns/0/.style={
+        column name={$SI_{max}$},
+        column type={S[round-mode=places, round-precision=0]},string type},  % use siunitx for formatting
+      display columns/1/.style={
+        column name={$X_{measured}$},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      display columns/2/.style={
+        column name={$X_{measured}$ CI95},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      display columns/3/.style={
+        column name={$X_{theoretical}$},
+        column type={S[round-mode=places, round-precision=4]},string type
+        },
+      display columns/4/.style={
+        column name={$X_{calculated}$},
+        column type={S[round-mode=places, round-precision=4]},string type
+        },
+      display columns/5/.style={
+        column name={$X_{calculated}$ CI95},
+        column type={S[round-mode=places, round-precision=4]},string type
+        },
+      every head row/.style={
+        column name={},
+        before row={\toprule}, % have a rule at top
+        after row={\midrule}, % rule under units
+            },
+        every last row/.style={after row=\bottomrule}, % rule at bottom
+    ]{data_tables/data_throughput_si_max_inf.csv} % filename/path to file
+  \end{center}
+\end{table}
+
+Come spiegato nelle sezioni precedenti, si è scelto di non svuotare le code per rimanere fedeli al caso di studio di riferimento, dove questo comportamento viene gestito in questo modo.

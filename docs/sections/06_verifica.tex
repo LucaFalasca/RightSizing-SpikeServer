@@ -100,7 +100,7 @@ Sebbene si sia scelto di mantenere questo approccio per garantire la comparabili
 
 \[ X_{calculated} = U_{web} \cdot \mu_{web} \]
 
-Come mostrato in Figura \ref{fig:correct_throughput} e nella Tabella \ref{tab:verifica_throughput2}, il throughput calcolato a partire dall'utilizzazione ($X_{\text{calculated}}$) rispetta perfettamente il limite teorico, confermando che la logica interna del simulatore è corretta e che la discrepanza in Figura 6 è un artefatto della metrica di misurazione scelta dallo studio di riferimento, non un errore implementativo.
+Come mostrato in Figura \ref{fig:correct_throughput} e nella Tabella \ref{tab:verifica_throughput2}, il throughput calcolato a partire dall'utilizzazione ($X_{\text{calculated}}$) rispetta perfettamente il limite teorico, confermando che la logica interna del simulatore è corretta e che la discrepanza in Figura 6 è un artefatto della metrica di misurazione scelta dallo studio di riferimento, non un errore implementativo. è bene notare che questa discrepanza emerge solo in condizioni di sovraccarico estremo come questi (\(SI_{max}=\infty\) e \(\lambda > \mu\)) e non influenza i risultati principali dello studio, che si concentrano su scenari stabili o moderatamente carichi.
 
 \begin{figure}[H]
     \centering

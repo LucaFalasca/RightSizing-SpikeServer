@@ -1,0 +1,127 @@
+\section{Risultati}
+Gli esperimenti condotti mirano a raggiungere gli obiettivi delineati nella sezione 2.
+\subsection{Obiettivo 1}
+Come si può evincere dalla figura \ref{fig:response_time_vs_si_max}, il tempo di risposta medio \(E[R]\) rimane al di sotto della soglia di 8 secondi per valori di \(SI_{max}\) fino a circa 90. Esattamente come suggerito nello studio di riferimento, il valore ottimale di \(SI_{max}\) che massimizza l'utilizzo del web server mantenendo il rispetto dello SLA si attesta intorno a 80-90. Considerando che con l'intervallo di confidenza con 90 si sfora, il valore più prudente da adottare per \(SI_{max}\) tra i due risulta essere 80.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/response_time_vs_si_max.png}
+    \caption{Tempo di risposta medio in funzione di \(SI_{max}\)}
+    \label{fig:response_time_vs_si_max}
+\end{figure}
+
+\begin{table}[H]
+    \begin{center}
+        \caption{Tempo di risposta medio in funzione di \(SI_{max}\)}
+        \pgfplotstabletypeset[
+        multicolumn names, % allows to have multicolumn names
+        col sep=comma, % the seperator in our .csv file
+        display columns/0/.style={
+            column name={$SI_{max}$},
+            column type={S[round-mode=places, round-precision=0]},string type
+        },
+        display columns/1/.style={
+            column name={$E[T_s]$},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        display columns/2/.style={
+            column name={$E[T_s]$ CI95},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        every head row/.style={
+            before row=\toprule, % adds a top rule before the table header
+            after row=\midrule,  % adds a mid rule after the table header
+        },
+        every last row/.style={
+            after row=\bottomrule, % adds a bottom rule after the table
+        },
+        ]{../docs/data_tables/response_time_vs_si_max.csv}
+    \end{center}
+\end{table}
+ 
+
+\subsection{Obiettivo 2}
+Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accade lo stesso fenomeno descritto nello studio di riferimento: al crescere del tasso di arrivo, il tempo di risposta medio aumenta all'aumentare degli arrivi, fino a che non si arriva a superare la soglia \(SI_{max}\). A questo punto, il tempo di risposta comincia a calare fino a che anche lo spike server si satura e il tempo di risposta ricomincia a salire per valori superiori a 11.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/response_time_vs_arrival_rate_vs_si_max.png}
+    \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\)}
+    \label{fig:response_time_vs_arrival_rate_vs_si_max}
+\end{figure}
+
+\begin{table}[H]
+    \begin{center}
+        \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\)}
+        \pgfplotstabletypeset[
+        multicolumn names, % allows to have multicolumn names
+        col sep=comma, % the seperator in our .csv file
+        display columns/0/.style={
+            column name={SI max},
+            column type={S[round-mode=places, round-precision=0]},string type
+        },
+        display columns/1/.style={
+            column name={Arrival Rate},
+            column type={S[round-mode=places, round-precision=2]},string type
+        },
+        display columns/2/.style={
+            column name={Total Response Time Mean},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        display columns/3/.style={
+            column name={Total Response Time CI95},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        every head row/.style={
+            before row=\toprule, % adds a top rule before the table header
+            after row=\midrule,  % adds a mid rule after the table header
+        },
+        every last row/.style={
+            after row=\bottomrule, % adds a bottom rule after the table
+        },
+        ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max.csv}
+    \end{center}
+\end{table}
+
+\subsection{Obiettivo 3}
+Nell'obiettivo 3 si va ad duplicare la potenza dello spike server, per verificare se questo evita il saturamento dello spike server e quindi il successivo aumento del tempo di risposta medio. Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}, lo spike server non arriva più a saturarsi e il tempo di risposta continua a diminuire all'aumentare del tasso di arrivo. 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/response_time_vs_arrival_rate_vs_si_max_enhanced_spike.png}
+    \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\) con spike server potenziato}
+    \label{fig:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}
+\end{figure}
+
+\begin{table}[H]
+    \begin{center}
+        \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\) con spike server potenziato}
+        \pgfplotstabletypeset[
+        multicolumn names, % allows to have multicolumn names
+        col sep=comma, % the seperator in our .csv file
+        display columns/0/.style={
+            column name={SI max},
+            column type={S[round-mode=places, round-precision=0]},string type
+        },
+        display columns/1/.style={
+            column name={Arrival Rate},
+            column type={S[round-mode=places, round-precision=2]},string type
+        },
+        display columns/2/.style={
+            column name={Total Response Time Mean},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        display columns/3/.style={
+            column name={Total Response Time CI95},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        every head row/.style={
+            before row=\toprule, % adds a top rule before the table header
+            after row=\midrule,  % adds a mid rule after the table header
+        },
+        every last row/.style={
+            after row=\bottomrule, % adds a bottom rule after the table
+        },
+        ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max_enhanced_spike.csv}
+    \end{center}
+\end{table}

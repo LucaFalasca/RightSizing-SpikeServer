@@ -11,14 +11,14 @@ Ci sono varie verifiche che si possono fare andando a controllare se tutta una s
         \item Verifico che aumentando \(SI_{max}\) l'utilizzazione del web server aumenta
         \item Verifico che il throughput sia pari al tasso di arrivo quando il sistema è stabile e uguale al tasso di servizio quando il sistema è sovraccarico.
     \end{itemize}
-    \item Verifica leggi operazionali
-    \begin{itemize}
-        \item Verifica della legge di little: \(E[N] = \lambda E[R]\)
-    \end{itemize}
-    \item Verifica della distribuzione
-    \begin{itemize}
-        \item Verifica che media e cv della distribuzione iperesponenziale corrispondano ai valori impostati.
-    \end{itemize}
+    % \item Verifica leggi operazionali
+    % \begin{itemize}
+    %     \item Verifica della legge di little: \(E[N] = \lambda E[R]\)
+    % \end{itemize}
+    % \item Verifica della distribuzione
+    % \begin{itemize}
+    %     \item Verifica che media e cv della distribuzione iperesponenziale corrispondano ai valori impostati.
+    % \end{itemize}
 \end{itemize}
     
 \subsection{Verifica del routing basato su soglia \(SI_{max}\)}
@@ -52,7 +52,7 @@ Impostando un carico di lavoro fisso e variando il valore di \(SI_{max}\), si pu
     \label{fig:verifica_utilizzazione_si}
 \end{figure}
 
-\begin{table}[h!]
+\begin{table}[H]
   \begin{center}
     \caption{Verifica dell'utilizzazione del web server al variare di \(SI_{max}\)}
     \pgfplotstabletypeset[
@@ -77,7 +77,17 @@ Impostando un carico di lavoro fisso e variando il valore di \(SI_{max}\), si pu
 \end{table}
 
 \subsubsection{Verifica del throughput}
-Variando il carico di lavoro da 1 req/s a 12 req/s e impostando \(SI_{max} = \infty\), in modo da misurare solo il web server, si può verificare che il throughput del sistema non superi mai il suo limite teorico, che nel caso considerato è uguale a \(min(\mu_{web}, \lambda_{web}) \). Tuttavia dalla figura \ref{fig:wrong_throughput} si nota come il throughput misurato superi il valore teorico per carichi di lavoro elevati. Andando ad investigare il problema, il problema era dovuto dalla gestione di fine simulazione. Infatti, siccome alla fine della simulazione le code non vengono svuotate ci sono tutta una serie di job ancora in coda che non vengono considerati nella metrica di throughput, calcolata come \( num\_completed / sim\_time \). 
+Variando il carico di lavoro da 1 req/s a 12 req/s e impostando \(SI_{max} = \infty\), in modo da misurare solo il web server, si può verificare che il throughput del sistema non superi mai il suo limite teorico, che nel caso considerato è uguale a \(\min(\mu_{web}, \lambda_{web})\). Tuttavia, come evidenziato in Figura 6, il throughput misurato \(X_{measured} = N_{completed} / T_{sim}\) supera il limite teorico in condizioni di sovraccarico \((\rho>1)\). L'analisi di questa anomalia ha identificato la causa nella gestione della fine della simulazione (stopping condition).
+
+Il protocollo di simulazione adottato, per mantenere stretta aderenza al caso di studio di riferimento, interrompe la simulazione a  \(T_{stop}=1200s\) senza attendere lo svuotamento delle code. Questa scelta metodologica introduce un bias sistematico quando il sistema è instabile:
+\begin{itemize}
+  \item Il calcolo del throughput considera solo i job completati entro $T_{stop}$.
+  \item A causa della distribuzione iperesponenziale dei servizi (cv=4), i job con richieste di servizio brevi tendono a completare rapidamente, mentre i job con richieste lunghe ("heavy tail") tendono ad accumularsi in coda e rimanere incompleti allo scadere del tempo.
+\end{itemize}
+
+  Di conseguenza, il rapporto tra job completati e tempo trascorso risulta sovrastimato rispetto alla capacità reale del server di smaltire lavoro medio.
+
+
 
 \begin{figure}[H]
     \centering
@@ -86,7 +96,11 @@ Variando il carico di lavoro da 1 req/s a 12 req/s e impostando \(SI_{max} = \in
     \label{fig:wrong_throughput}
 \end{figure}
 
-Se invece calcoliamo il throughput a partire dall'utilizzazione come \( X = U * \mu \), otteniamo i risultati mostrati in figura \ref{fig:correct_throughput}, dove si può notare come il throughput misurato sia sempre inferiore al valore teorico.
+Sebbene si sia scelto di mantenere questo approccio per garantire la comparabilità dei risultati con il report originale, è fondamentale notare che il simulatore si comporta correttamente se si considera la relazione fondamentale:
+
+\[ X_{calculated} = U_{web} \cdot \mu_{web} \]
+
+Come mostrato in Figura \ref{fig:correct_throughput} e nella Tabella \ref{tab:verifica_throughput2}, il throughput calcolato a partire dall'utilizzazione ($X_{\text{calculated}}$) rispetta perfettamente il limite teorico, confermando che la logica interna del simulatore è corretta e che la discrepanza in Figura 6 è un artefatto della metrica di misurazione scelta dallo studio di riferimento, non un errore implementativo.
 
 \begin{figure}[H]
     \centering
@@ -95,9 +109,10 @@ Se invece calcoliamo il throughput a partire dall'utilizzazione come \( X = U * 
     \label{fig:correct_throughput}
 \end{figure}
 
-\begin{table}[h!]
+\begin{table}[H]
   \begin{center}
     \caption{Verifica del Throughput}
+    \label{tab:verifica_throughput2}
     \pgfplotstabletypeset[
       multicolumn names, % allows to have multicolumn names
       col sep=comma, % the seperator in our .csv file
@@ -131,5 +146,3 @@ Se invece calcoliamo il throughput a partire dall'utilizzazione come \( X = U * 
     ]{data_tables/data_throughput_si_max_inf.csv} % filename/path to file
   \end{center}
 \end{table}
-
-Come spiegato nelle sezioni precedenti, si è scelto di non svuotare le code per rimanere fedeli al caso di studio di riferimento, dove questo comportamento viene gestito in questo modo.

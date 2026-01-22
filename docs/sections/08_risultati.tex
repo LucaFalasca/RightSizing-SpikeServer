@@ -40,7 +40,7 @@ Come si può evincere dalla figura \ref{fig:response_time_vs_si_max}, il tempo d
  
 
 \subsection{Obiettivo 2}
-Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accade lo stesso fenomeno descritto nello studio di riferimento: al crescere del tasso di arrivo, il tempo di risposta medio aumenta all'aumentare degli arrivi, fino a che non si arriva a superare la soglia \(SI_{max}\). A questo punto, il tempo di risposta comincia a calare fino a che anche lo spike server si satura e il tempo di risposta ricomincia a salire per valori superiori a 11. Nelle tabelle sottostanti sono riportati i valori numerici però mostrando solo i valori di \(SI_{max}\) a multipli di 20 per la grande quantità di dati generata.
+Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accade lo stesso fenomeno descritto nello studio di riferimento: al crescere del tasso di arrivo, il tempo di risposta medio aumenta all'aumentare degli arrivi, fino a non si arriva a saturare il sistema (\(\rho > 1\)) e quindi a superare la soglia \(SI_{max}\). A questo punto, il tempo di risposta comincia a calare fino a che anche lo spike server si satura e il tempo di risposta ricomincia a salire per valori di \(\lambda \geq 11\) nella maggior parte dei casi. Per valori molto bassi il tempo di risposta continua a salire quasi sempre, perché essenzialmente è come se il webserver non venisse utilizzato e tutto il carico finisse sullo spike server, che quindi tende a saturarsi già per valori più bassi di \(\lambda\). Nelle tabelle sottostanti sono riportati i valori numerici però mostrando solo i valori di \(SI_{max}\) a multipli di 20 per la grande quantità di dati generata.
 
 \begin{figure}[H]
     \centering

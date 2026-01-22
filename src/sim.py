@@ -28,8 +28,8 @@ class Track:
 # --- Programma Principale ---
 class Simulator:
     START      = 0.0
-    BIAS_PHASE = 120.0         # Fase Transitoria di 120 secondi
-    STOP       = 1200.0         # Simuliamo fino a 1200 secondi
+    BIAS_PHASE = 1000.0         # Fase Transitoria di 120 secondi
+    STOP       = 10000.0         # Simuliamo fino a 1200 secondi
     INFINITY   = 1e15
     SEED = 8
     REPLICAS = 100
@@ -186,7 +186,7 @@ class Simulator:
             spike_jobs = []
 
         
-            while (t < Simulator.STOP):
+            while (t < Simulator.STOP or len(web_jobs) > 0 or len(spike_jobs) > 0):
                 # Per trovare il prossimo evento devo vedere chi è che il tempo di completamento più piccolo e confrontarlo con il prossimo arrivo
                 logging.debug(f"Current Time: {t}")
 
@@ -229,7 +229,7 @@ class Simulator:
                     job.remaining_work -= time_to_next_event / len(spike_jobs)  # Condivisione della CPU tra i job
 
                 # A questo punto processo l'evento
-                if min_work_web_job is not None and time_to_complete_web == time_to_next_event:
+                if min_work_web_job is not None and abs(time_to_complete_web - time_to_next_event) < 1e-8:
                     # Completamento di un job, lo leviamo dalla lista 
                     web_jobs.remove(min_work_web_job)
                     logging.debug(f"Completed Web Job Arrival: {min_work_web_job.arrival_time}")
@@ -241,7 +241,7 @@ class Simulator:
                     if t > Simulator.BIAS_PHASE: 
                         area.completed_web += 1
                         #TODO
-                elif min_work_spike_job is not None and time_to_complete_spike == time_to_next_event:
+                elif min_work_spike_job is not None and abs(time_to_complete_spike - time_to_next_event) < 1e-8:
                     # Completamento di un job, lo leviamo dalla lista 
                     spike_jobs.remove(min_work_spike_job)
                     logging.debug(f"Completed Spike Job Arrival: {min_work_spike_job.arrival_time}")
@@ -253,7 +253,7 @@ class Simulator:
                     if t > Simulator.BIAS_PHASE: 
                         area.completed_spike += 1
                         #TODO
-                elif time_to_next_event == time_to_next_arrival:
+                elif abs(time_to_next_event - time_to_next_arrival) < 1e-8:
                     # Arrivo di un nuovo job
                     is_spike = (len(web_jobs) >= SI_max)
                     service_demand = self._GetServiceSpike(spike_stream) if is_spike else self._GetServiceWeb(web_stream)
@@ -266,7 +266,10 @@ class Simulator:
                         web_jobs.append(new_job)
                     logging.debug(f"New {'Spike' if is_spike else 'Web'} Job Arrival: {t}, Service Demand: {service_demand}")
                     # Programmo il prossimo arrivo
-                    time_to_next_arrival = self._GetArrival(arrival_stream)
+                    if t < Simulator.STOP:
+                        time_to_next_arrival = self._GetArrival(arrival_stream)
+                    else:
+                        time_to_next_arrival = Simulator.INFINITY
                 else:
                     # Nessun evento, dovrebbe essere impossibile
                     raise Exception(f"Nessun evento trovato. \n \
@@ -287,7 +290,7 @@ class Simulator:
                 break
 
             # # --- Risultati Finali ---
-            interval_time = Simulator.STOP - Simulator.BIAS_PHASE
+            interval_time = t - Simulator.BIAS_PHASE
             avg_interarrival = area.area_node_web / area.completed_web if area.completed_web > 0 else 0.0
             total_jobs_completed = area.completed_web + area.completed_spike
             avg_response_time_web = area.area_node_web / area.completed_web if area.completed_web > 0 else None

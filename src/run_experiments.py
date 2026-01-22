@@ -71,5 +71,5 @@ if __name__ == "__main__":
 
     # Esperimento con SI_max fisso a 100 e arrival rate fisso a 6 req/s, variando il coefficiente di variazione CV
     df = experiments(simulator=sim, stress_test=True)
-    df.to_csv("src/data/experiment_0_si_max.csv", index=False)
+    df.to_csv("src/data/experiment_inf_si_max.csv", index=False)
 

@@ -12,7 +12,7 @@
 \contentsline {subsection}{\numberline {4.5}Gestione della fine della simulazione:}{4}{}%
 \contentsline {section}{\numberline {5}Modello Computazionale}{4}{}%
 \contentsline {subsection}{\numberline {5.1}Stato del sistema}{4}{}%
-\contentsline {subsection}{\numberline {5.2}Descrizione del job}{5}{}%
+\contentsline {subsection}{\numberline {5.2}Descrizione del job}{4}{}%
 \contentsline {subsection}{\numberline {5.3}Identificazione degli eventi}{5}{}%
 \contentsline {subsection}{\numberline {5.4}Logica di controllo e routing}{5}{}%
 \contentsline {subsection}{\numberline {5.5}Configurazione dei parametri delle distribuzioni}{5}{}%
@@ -35,3 +35,4 @@
 \contentsline {subsection}{\numberline {8.1}Obiettivo 1}{18}{}%
 \contentsline {subsection}{\numberline {8.2}Obiettivo 2}{19}{}%
 \contentsline {subsection}{\numberline {8.3}Obiettivo 3}{21}{}%
+\contentsline {subsection}{\numberline {8.4}Conclusioni}{21}{}%

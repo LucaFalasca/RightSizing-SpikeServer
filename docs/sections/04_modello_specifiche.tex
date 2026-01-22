@@ -1,5 +1,5 @@
 \section{Modello delle specifiche}
-Queste variabili matematiche, sono la rappresentazione dello stato del sistema:
+Queste variabili matematiche sono la rappresentazione dello stato del sistema:
 \begin{itemize}
     \item \(SI(t) \in [0, SI_{max})\): Spike indicator, indica il numero di job presenti nel web server al tempo t.
     \item \(n_{spike}(t) \in [0, \infty)\): numero di job presenti nello spike server al tempo t.
@@ -43,7 +43,7 @@ Vale la pena notare che, nel caso base del webserver, siccome \(\rho > 1\), il s
             \item Decrementa il contatore n\_spike se il job era nello spike server
         \end{itemize}
 \end{itemize}
-Nella logica originale del caso di studio, il valore di SI parte da \(SI_{max}\) e viene decrementato ad ogni completamento di un job. La logica da me adottata, nonostante sia inversa, è perfettamente equivalente.
+Nella logica originale del caso di studio, il valore di SI parte da \(SI_{max}\) e viene decrementato ad ogni completamento di un job. La logica adottata, nonostante sia inversa, è perfettamente equivalente.
 
 \subsection{Metrica di valutazione delle prestazioni:}
 Lo SLA da rispettare è un tempo di risposta medio \(E[R] \leq 8\) secondi.

@@ -42,7 +42,7 @@ Ogni volta che arriva un nuovo job:
     \item Se \(\mathrm{len}(web\_jobs) \leq SI_{max}\), il job viene aggiunto a web\_jobs.
     \item Se \(\mathrm{len}(web\_jobs) > SI_{max}\), il job viene aggiunto a spike\_jobs.
 \end{itemize} 
-Ogni volta che job completa rimuove dalla lista corrispondente il job (web\_jobs o spike\_jobs).
+Ogni volta che un job completa rimuove dalla lista corrispondente il job (web\_jobs o spike\_jobs).
 
 \subsection{Configurazione dei parametri delle distribuzioni}
 \begin{itemize}
@@ -59,8 +59,7 @@ La distribuzione iperesponenziale è stata implementata utilizzando l'esponenzia
     \label{fig:hyperexponential}
 \end{figure}
 In particolare date in input la media e il coefficiente di variazione \(cv\). Sapendo che \(g(p) = cv^2\), possiamo calcolare \(p_1\), \(p_2\), \(m_1\) e \(m_2\) come:
-\[c = \frac{cv^2 - 1}{cv^2 + 1}\]
-\[p_1 = \frac{1 + c}{2}\]
+\[p_1 = \frac{1 + \sqrt{\frac{cv^2 - 1}{cv^2 + 1}}}{2}\]
 \[p_2 = 1 - p_1\]
 \[m_1 = \frac{mean}{2 \cdot p_1}\]
 \[m_2 = \frac{mean}{2 \cdot p_2}\]
@@ -97,11 +96,11 @@ Dove:
 \end{itemize}
 
 \subsubsection{Parallelismo}
-Per velocizzare l'esecuzione delle repliche della simulazione, è stata implementata una logica di multiprocessing per sfruttare tutti i core della mia CPU disponibili. Tuttavia per farlo ho dovuto prendere alcune accortezze che permettessero di non minare nè l'indipendenza delle repliche nè la riproducibilità dei risultati. In particolare:
+Per velocizzare l'esecuzione delle repliche della simulazione, è stata implementata una logica di multiprocessing per sfruttare tutti i core della CPU disponibili. Tuttavia per farlo è stato necessario prendere alcune accortezze che permettessero di non minare nè l'indipendenza delle repliche nè la riproducibilità dei risultati. In particolare:
 \begin{itemize}
     \item ad ogni processo vengono assegnati 3 stream dei 256 disponibili, in modo che ogni processo abbia il proprio spazio di numeri casuali indipendenti dagli altri processi, ma in maniera tale che potessero procedere in parallelo senza che la non deterministicità del parallelismo influisse sull'ordine di estrazione dei numeri casuali.
-    \item Per il numero di repliche introdotte, ogni processo non si avvicinava nemmeno lontanamente al limite dello stream assegnato. \[MODULUS / STREAM \approx 8388607\] Ho comunque implementato un meccanismo in cui una volta sforato il limite dello stream, gli venivano assegnati 3 nuovi stream. Ed essendo il numero di processi 12, e ogni processo usa 3 stream, questo è tranquillamente possibile senza sforare il limite dei 256 stream e senza ulteriori meccanismi di controllo.
-    \item Sempre per garantire la riproducibilità dei risultati, ad ogni processo vengono assegnate sempre lo stesso numero di repliche da eseguire, in modo tale che le ultime repliche non vengano eseguite da processi diversi (e quindi strem diversi) in base all'assegnazione dinamica di essi.
+    \item Per il numero di repliche introdotte, ogni processo non si avvicinava nemmeno lontanamente al limite dello stream assegnato. \[MODULUS / STREAM \approx 8388607\] È stato comunque implementato un meccanismo in cui una volta sforato il limite dello stream, gli venivano assegnati 3 nuovi stream. Ed essendo il numero di processi 12, e ogni processo usa 3 stream, questo è tranquillamente possibile senza sforare il limite dei 256 stream e senza ulteriori meccanismi di controllo.
+    \item Sempre per garantire la riproducibilità dei risultati, ad ogni processo vengono assegnate sempre lo stesso numero di repliche da eseguire, in modo tale che le ultime repliche non vengano eseguite da processi diversi (e quindi stream diversi) in base all'assegnazione dinamica di essi.
 \end{itemize}
 
 \subsection{Raccolta delle metriche}

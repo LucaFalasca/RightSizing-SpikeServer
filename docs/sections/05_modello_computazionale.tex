@@ -78,18 +78,18 @@ Da notare che per ogni campionamento dell'esponenziale si utilizzano, quindi, du
 Il simulatore è strutturato come una classe Simulator che gestisce l'inizializzazione, l'esecuzione e la raccolta delle metriche della simulazione. La classe ha una serie di costanti di configurazione: 
 \begin{lstlisting}[language=Python,frame=single,breaklines=true]
 START       = 0.0
-BIAS_PHASE  = 120.0         
-STOP        = 1200.0         
+BIAS_PHASE  = 500.0         
+STOP        = 5000.0         
 INFINITY    = 1e15
 SEED        = 8
 REPLICAS    = 100
-N_PROCESSES = 12
+N_PROCESSES = 40
 \end{lstlisting}
 Dove:
 \begin{itemize}
     \item START: tempo di inizio della simulazione
-    \item BIAS\_PHASE: durata della fase transitoria (120 secondi)
-    \item STOP: tempo di fine della simulazione (1200 secondi)
+    \item BIAS\_PHASE: durata della fase transitoria (500 secondi)
+    \item STOP: tempo di fine della simulazione (5000 secondi)
     \item INFINITY: un valore molto grande usato per inizializzare i tempi di evento (deve essere molto più grande di STOP)
     \item SEED: seme per il generatore di numeri casuali, che è stato utilizzato insieme alla libreria rngs.py per tutti i generatori di numeri casuali
     \item REPLICAS: numero di repliche della simulazione (100 repliche)

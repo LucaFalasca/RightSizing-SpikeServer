@@ -1,4 +1,5 @@
 from rvgs import Uniform, Exponential
+import math
 
 def Hyperexponential(mean,cv):
   #=========================================================
@@ -6,7 +7,7 @@ def Hyperexponential(mean,cv):
   #NOTE: use mean > 0.0 and cv > 1.0
   #=========================================================
   #
-  c = (cv * cv - 1.0) / (cv * cv + 1.0)
+  c = math.sqrt((cv * cv - 1.0) / (cv * cv + 1.0))
   p1 = 0.5 * (1.0 + c)
   p2 = 1.0 - p1
   m1 = mean / (2.0 * p1)

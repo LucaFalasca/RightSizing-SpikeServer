@@ -11,14 +11,10 @@ Ci sono varie verifiche che si possono fare andando a controllare se tutta una s
         \item Verifico che aumentando \(SI_{max}\) l'utilizzazione del web server aumenta
         \item Verifico che il throughput sia pari al tasso di arrivo quando il sistema è stabile e uguale al tasso di servizio quando il sistema è sovraccarico.
     \end{itemize}
-    % \item Verifica leggi operazionali
-    % \begin{itemize}
-    %     \item Verifica della legge di little: \(E[N] = \lambda E[R]\)
-    % \end{itemize}
-    % \item Verifica della distribuzione
-    % \begin{itemize}
-    %     \item Verifica che media e cv della distribuzione iperesponenziale corrispondano ai valori impostati.
-    % \end{itemize}
+    \item Verifica della distribuzione
+    \begin{itemize}
+        \item Verifica che media e cv della distribuzione iperesponenziale corrispondano ai valori impostati.
+    \end{itemize}
 \end{itemize}
     
 \subsection{Verifica del routing basato su soglia \(SI_{max}\)}
@@ -115,3 +111,13 @@ Variando il carico di lavoro da 1 req/s a 12 req/s e impostando \(SI_{max} = \in
     ]{data_tables/data_throughput_si_max_inf.csv} % filename/path to file
   \end{center}
 \end{table}
+
+\subsection{Verifica della distribuzione iperesponenziale}
+Per verificare che la distribuzione iperesponenziale implementata nel simulatore corrisponda a quella voluta, sono state effettuate delle misurazioni della media e del coefficiente di variazione dei tempi di servizio generati, confrontandoli con i valori teorici impostati. In particolare sono state effettuate sempre 100 repliche di simulazione con \(SI_{max} = 80\). Effettivamente, come mostrato in figura \ref{fig:verifica_distribuzione}, i valori teorici rientrano perfettamente negli intervalli di confidenza al 95\% delle misurazioni effettuate.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/verifica_distribuzione.png}
+    \caption{Verifica della distribuzione iperesponenziale dei tempi di servizio}
+    \label{fig:verifica_distribuzione}
+\end{figure}

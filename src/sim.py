@@ -23,13 +23,43 @@ class Track:
 
         self.scaling_actions = 0
 
+        # Metriche per verifica iperesponenziale
+        # Per gli Arrivi
+        self.arr_sum = 0.0
+        self.arr_sq_sum = 0.0
+        self.arr_count = 0
 
+        # Per Web Service
+        self.web_serv_sum = 0.0
+        self.web_serv_sq_sum = 0.0
+        self.web_serv_count = 0
+
+        # Per Spike Service
+        self.spike_serv_sum = 0.0
+        self.spike_serv_sq_sum = 0.0
+        self.spike_serv_count = 0
+
+# Helper per aggiornare le statistiche sperimentali
+    def record_arrival(self, val):
+        self.arr_sum += val
+        self.arr_sq_sum += val * val
+        self.arr_count += 1
+
+    def record_service_web(self, val):
+        self.web_serv_sum += val
+        self.web_serv_sq_sum += val * val
+        self.web_serv_count += 1
+
+    def record_service_spike(self, val):
+        self.spike_serv_sum += val
+        self.spike_serv_sq_sum += val * val
+        self.spike_serv_count += 1
 
 # --- Programma Principale ---
 class Simulator:
     START      = 0.0
-    STOP       = 5000.0         # Simuliamo fino a 3000 secondi
-    BIAS_PHASE = STOP * 0.1         # Fase Transitoria di 300 secondi
+    STOP       = 5000.0         # Simuliamo fino a 5000 secondi
+    BIAS_PHASE = STOP * 0.1         # Fase Transitoria di 500 secondi
     INFINITY   = 1e15
     SEED = 8
     REPLICAS = 100
@@ -37,11 +67,11 @@ class Simulator:
 
     def __init__(self):
         # --- Parametri del Modello di default ---
-        self._SI_max = 160                 # Soglia SI_max (da ottimizzare)
+        self._SI_max = 80                 # Soglia SI_max
         self._arrival_mean = 0.15          # 400 req/min
         self._web_mean     = 0.16          
         self._spike_mean   = 0.16          # Tasso identico al web server
-        self._cv           = 4.0           # Coefficiente di variazione richiesto 
+        self._cv           = 4.0           # Coefficiente di variazione
         self._stream_usage = {}
         self.reset()
 
@@ -179,9 +209,10 @@ class Simulator:
         while input_replica is not None:
 
             t = Simulator.START
-            area = Track()
+            track = Track()
             t = Simulator.START
             time_to_next_arrival = self._GetArrival(arrival_stream)
+            track.record_arrival(time_to_next_arrival)
             web_jobs = []
             spike_jobs = []
 
@@ -214,13 +245,13 @@ class Simulator:
 
                 # Aggiorno le aree sotto le curve per calcolare le statistiche di utilizzo e numero di job
                 if t >= Simulator.BIAS_PHASE:
-                    area.area_node_web += len(web_jobs) * time_to_next_event
-                    area.area_node_spike += len(spike_jobs) * time_to_next_event
+                    track.area_node_web += len(web_jobs) * time_to_next_event
+                    track.area_node_spike += len(spike_jobs) * time_to_next_event
 
                     if len(web_jobs) > 0:
-                        area.area_busy_web += time_to_next_event
+                        track.area_busy_web += time_to_next_event
                     if len(spike_jobs) > 0:
-                        area.area_busy_spike += time_to_next_event
+                        track.area_busy_spike += time_to_next_event
 
                 # A questo punto aggiorno il tempo rimanente di lavoro per ogni job in servizio in base al tempo trascorso
                 for job in web_jobs:
@@ -239,7 +270,7 @@ class Simulator:
                     
                     # Aggiorno le statistiche
                     if t > Simulator.BIAS_PHASE: 
-                        area.completed_web += 1
+                        track.completed_web += 1
                         #TODO
                 elif min_work_spike_job is not None and abs(time_to_complete_spike - time_to_next_event) < 1e-8:
                     # Completamento di un job, lo leviamo dalla lista 
@@ -251,7 +282,7 @@ class Simulator:
 
                     # Aggiorno le statistiche
                     if t > Simulator.BIAS_PHASE: 
-                        area.completed_spike += 1
+                        track.completed_spike += 1
                         #TODO
                 elif abs(time_to_next_event - time_to_next_arrival) < 1e-8:
                     # Arrivo di un nuovo job
@@ -260,14 +291,17 @@ class Simulator:
                     new_job = Simulator.Job(t, service_demand, is_spike)
                     if is_spike:
                         if len(spike_jobs) == 0:
-                            area.scaling_actions += 1
+                            track.scaling_actions += 1
                         spike_jobs.append(new_job)
+                        track.record_service_spike(service_demand)
                     else:
                         web_jobs.append(new_job)
+                        track.record_service_web(service_demand)
                     logging.debug(f"New {'Spike' if is_spike else 'Web'} Job Arrival: {t}, Service Demand: {service_demand}")
                     # Programmo il prossimo arrivo
                     if t < Simulator.STOP:
                         time_to_next_arrival = self._GetArrival(arrival_stream)
+                        track.record_arrival(time_to_next_arrival)
                     else:
                         time_to_next_arrival = Simulator.INFINITY
                 else:
@@ -289,17 +323,29 @@ class Simulator:
                 self._stream_usage = {}
                 break
 
+            def calc_mean_cv(sum_val, sq_sum, count):
+                if count < 2: return 0.0, 0.0
+                mean = sum_val / count
+                variance = (sq_sum - (sum_val**2 / count)) / (count - 1)
+                std_dev = np.sqrt(variance) if variance > 0 else 0.0
+                cv = std_dev / mean if mean > 0 else 0.0
+                return mean, cv
+
+            meas_arr_mean, meas_arr_cv = calc_mean_cv(track.arr_sum, track.arr_sq_sum, track.arr_count)
+            meas_web_mean, meas_web_cv = calc_mean_cv(track.web_serv_sum, track.web_serv_sq_sum, track.web_serv_count)
+            meas_spike_mean, meas_spike_cv = calc_mean_cv(track.spike_serv_sum, track.spike_serv_sq_sum, track.spike_serv_count)
+
             # # --- Risultati Finali ---
             interval_time = t - Simulator.BIAS_PHASE
-            avg_interarrival = area.area_node_web / area.completed_web if area.completed_web > 0 else 0.0
-            total_jobs_completed = area.completed_web + area.completed_spike
-            avg_response_time_web = area.area_node_web / area.completed_web if area.completed_web > 0 else None
-            avg_response_time_spike = area.area_node_spike / area.completed_spike if area.completed_spike > 0 else None
-            avg_response_time_total = (area.area_node_web + area.area_node_spike) / total_jobs_completed if total_jobs_completed > 0 else None
-            utilization_web = area.area_busy_web / interval_time
-            utilization_spike = area.area_busy_spike / interval_time
-            throughput_web = area.completed_web / interval_time
-            throughput_spike = area.completed_spike / interval_time
+            avg_interarrival = track.area_node_web / track.completed_web if track.completed_web > 0 else 0.0
+            total_jobs_completed = track.completed_web + track.completed_spike
+            avg_response_time_web = track.area_node_web / track.completed_web if track.completed_web > 0 else None
+            avg_response_time_spike = track.area_node_spike / track.completed_spike if track.completed_spike > 0 else None
+            avg_response_time_total = (track.area_node_web + track.area_node_spike) / total_jobs_completed if total_jobs_completed > 0 else None
+            utilization_web = track.area_busy_web / interval_time
+            utilization_spike = track.area_busy_spike / interval_time
+            throughput_web = track.completed_web / interval_time
+            throughput_spike = track.completed_spike / interval_time
             throughput_total = total_jobs_completed / interval_time
             
 
@@ -312,7 +358,13 @@ class Simulator:
                 "throughput_web": throughput_web,
                 "throughput_spike": throughput_spike,
                 "throughput_total": throughput_total,
-                "scaling_actions": area.scaling_actions
+                "scaling_actions": track.scaling_actions,
+                "meas_arrival_mean": meas_arr_mean,
+                "meas_arrival_cv": meas_arr_cv,
+                "meas_web_service_mean": meas_web_mean,
+                "meas_web_service_cv": meas_web_cv,
+                "meas_spike_service_mean": meas_spike_mean,
+                "meas_spike_service_cv": meas_spike_cv
             }
 
             queue_output.put(replica_results)

@@ -40,7 +40,7 @@ Come si può evincere dalla figura \ref{fig:response_time_vs_si_max}, il tempo d
  
 
 \subsection{Obiettivo 2}
-Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accade lo stesso fenomeno descritto nello studio di riferimento: al crescere del tasso di arrivo, il tempo di risposta medio aumenta all'aumentare degli arrivi, fino a che non si arriva a superare la soglia \(SI_{max}\). A questo punto, il tempo di risposta comincia a calare fino a che anche lo spike server si satura e il tempo di risposta ricomincia a salire per valori superiori a 11.
+Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accade lo stesso fenomeno descritto nello studio di riferimento: al crescere del tasso di arrivo, il tempo di risposta medio aumenta all'aumentare degli arrivi, fino a che non si arriva a superare la soglia \(SI_{max}\). A questo punto, il tempo di risposta comincia a calare fino a che anche lo spike server si satura e il tempo di risposta ricomincia a salire per valori superiori a 11. Nelle tabelle sottostanti sono riportati i valori numerici però mostrando solo i valori di \(SI_{max}\) a multipli di 20 per la grande quantità di dati generata.
 
 \begin{figure}[H]
     \centering
@@ -52,33 +52,66 @@ Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accad
 \begin{table}[H]
     \begin{center}
         \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\)}
-        \pgfplotstabletypeset[
-        multicolumn names, % allows to have multicolumn names
-        col sep=comma, % the seperator in our .csv file
-        display columns/0/.style={
-            column name={SI max},
-            column type={S[round-mode=places, round-precision=0]},string type
-        },
-        display columns/1/.style={
-            column name={Arrival Rate},
-            column type={S[round-mode=places, round-precision=2]},string type
-        },
-        display columns/2/.style={
-            column name={Total Response Time Mean},
-            column type={S[round-mode=places, round-precision=4]},string type
-        },
-        display columns/3/.style={
-            column name={Total Response Time CI95},
-            column type={S[round-mode=places, round-precision=4]},string type
-        },
-        every head row/.style={
-            before row=\toprule, % adds a top rule before the table header
-            after row=\midrule,  % adds a mid rule after the table header
-        },
-        every last row/.style={
-            after row=\bottomrule, % adds a bottom rule after the table
-        },
-        ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max.csv}
+        \begin{minipage}[t]{0.48\textwidth}
+            \pgfplotstabletypeset[
+            multicolumn names, % allows to have multicolumn names
+            col sep=comma, % the seperator in our .csv file
+            display columns/0/.style={
+                column name={SI max},
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/1/.style={
+                column name={\(\lambda\) },
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/2/.style={
+                column name={$E[T_s]$},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            display columns/3/.style={
+                column name={$E[T_s]$ CI95},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            every head row/.style={
+                before row=\toprule, % adds a top rule before the table header
+                after row=\midrule,  % adds a mid rule after the table header
+            },
+            every last row/.style={
+                after row=\bottomrule, % adds a bottom rule after the table
+            },
+            ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max_1.csv}
+        \end{minipage}
+        \begin{minipage}[t]{0.48\textwidth}
+            \pgfplotstabletypeset[
+            multicolumn names, % allows to have multicolumn names
+            col sep=comma, % the seperator in our .csv file
+            display columns/0/.style={
+                column name={SI max},
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/1/.style={
+                column name={\(\lambda\) },
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/2/.style={
+                column name={$E[T_s]$},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            display columns/3/.style={
+                column name={$E[T_s]$ CI95},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            every head row/.style={
+                before row=\toprule, % adds a top rule before the table header
+                after row=\midrule,  % adds a mid rule after the table header
+            },
+            every last row/.style={
+                after row=\bottomrule, % adds a bottom rule after the table
+            },
+            ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max_2.csv}
+        \end{minipage}
+        
+        
     \end{center}
 \end{table}
 
@@ -93,35 +126,66 @@ Nell'obiettivo 3 si va ad duplicare la potenza dello spike server, per verificar
     \label{fig:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}
 \end{figure}
 
-\begin{table}[H]
+\begin{table}
     \begin{center}
         \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\) con spike server potenziato}
-        \pgfplotstabletypeset[
-        multicolumn names, % allows to have multicolumn names
-        col sep=comma, % the seperator in our .csv file
-        display columns/0/.style={
-            column name={SI max},
-            column type={S[round-mode=places, round-precision=0]},string type
-        },
-        display columns/1/.style={
-            column name={Arrival Rate},
-            column type={S[round-mode=places, round-precision=2]},string type
-        },
-        display columns/2/.style={
-            column name={Total Response Time Mean},
-            column type={S[round-mode=places, round-precision=4]},string type
-        },
-        display columns/3/.style={
-            column name={Total Response Time CI95},
-            column type={S[round-mode=places, round-precision=4]},string type
-        },
-        every head row/.style={
-            before row=\toprule, % adds a top rule before the table header
-            after row=\midrule,  % adds a mid rule after the table header
-        },
-        every last row/.style={
-            after row=\bottomrule, % adds a bottom rule after the table
-        },
-        ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max_enhanced_spike.csv}
+        \begin{minipage}[t]{0.48\textwidth}
+            \pgfplotstabletypeset[
+            multicolumn names, % allows to have multicolumn names
+            col sep=comma, % the seperator in our .csv file
+            display columns/0/.style={
+                column name={SI max},
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/1/.style={
+                column name={\(\lambda\) },
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/2/.style={
+                column name={$E[T_s]$},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            display columns/3/.style={
+                column name={$E[T_s]$ CI95},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            every head row/.style={
+                before row=\toprule, % adds a top rule before the table header
+                after row=\midrule,  % adds a mid rule after the table header
+            },
+            every last row/.style={
+                after row=\bottomrule, % adds a bottom rule after the table
+            },
+            ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max_enhanced_spike_1.csv}
+        \end{minipage}
+        \begin{minipage}[t]{0.48\textwidth}
+            \pgfplotstabletypeset[
+            multicolumn names, % allows to have multicolumn names
+            col sep=comma, % the seperator in our .csv file
+            display columns/0/.style={
+                column name={SI max},
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/1/.style={
+                column name={\(\lambda\) },
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/2/.style={
+                column name={$E[T_s]$},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            display columns/3/.style={
+                column name={$E[T_s]$ CI95},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            every head row/.style={
+                before row=\toprule, % adds a top rule before the table header
+                after row=\midrule,  % adds a mid rule after the table header
+            },
+            every last row/.style={
+                after row=\bottomrule, % adds a bottom rule after the table
+            },
+            ]{../docs/data_tables/response_time_vs_arrival_rate_vs_si_max_enhanced_spike_2.csv}
+        \end{minipage}
     \end{center}
 \end{table}

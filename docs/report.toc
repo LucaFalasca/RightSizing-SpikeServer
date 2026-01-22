@@ -27,7 +27,9 @@
 \contentsline {subsubsection}{\numberline {6.2.1}Verifica dell'utilizzazione al variare di \(SI_{max}\)}{10}{}%
 \contentsline {subsubsection}{\numberline {6.2.2}Verifica del throughput}{11}{}%
 \contentsline {section}{\numberline {7}Validazione}{12}{}%
-\contentsline {section}{\numberline {8}Risultati}{12}{}%
-\contentsline {subsection}{\numberline {8.1}Obiettivo 1}{13}{}%
-\contentsline {subsection}{\numberline {8.2}Obiettivo 2}{14}{}%
-\contentsline {subsection}{\numberline {8.3}Obiettivo 3}{16}{}%
+\contentsline {subsection}{\numberline {7.1}Confronto tempi di risposta}{12}{}%
+\contentsline {subsection}{\numberline {7.2}Confronto Throughput}{15}{}%
+\contentsline {section}{\numberline {8}Risultati}{17}{}%
+\contentsline {subsection}{\numberline {8.1}Obiettivo 1}{17}{}%
+\contentsline {subsection}{\numberline {8.2}Obiettivo 2}{18}{}%
+\contentsline {subsection}{\numberline {8.3}Obiettivo 3}{21}{}%

@@ -7,23 +7,110 @@ Nello studio di riferimento vengono effettuati dei test sui tempi di risposta su
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/response_time_serazzi.png}
-    \caption{Tempi di risposta del webserver e dello spike server in funzione del carico. Fonte: \cite{serazzi_spike_server}.}
+    \includegraphics[width=1\textwidth]{images/response_time_serazzi.png}
+    \caption{Tempi di risposta del webserver e dello spike server in funzione del carico nel caso di studio di Serazzi}
     \label{fig:response_time_serazzi}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/response_time_web_vs_si_max.png}
+    \includegraphics[width=1\textwidth]{images/response_time_web_vs_si_max.png}
     \caption{Tempi di risposta del webserver in funzione del SI\_max ottenuti dalla simulazione.}
     \label{fig:response_time_web_sim}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/response_time_spike_vs_si_max.png}
+    \includegraphics[width=1\textwidth]{images/response_time_spike_vs_si_max.png}
     \caption{Tempi di risposta dello spike server in funzione del SI\_max ottenuti dalla simulazione.}
     \label{fig:response_time_spike_sim}
 \end{figure}
 
-Controntandoli con i risultati ottenuti dalla mia simulazione, si nota come l'andamento sia essenzialmente lo stesso, tuttavia i valori dei tempi differiscono. Questo è probabilmente dovuto dal tempo di simulazione che Serazzi non esplicita direttamente e quindi probabilmente differente dai 5000 secondi utilizzati nella mia simulazione. Tuttavia per non rendere troppo lunghe le simulazioni, ho eseguito una simulazione con SI_max = 160 su 50 repliche anziché 100 e aumentato il tempo di simulazione a 20000 secondi, per dimostrare che il motivo della differenza nei tempi di risposta è dovuto proprio al tempo di simulazione.
+\begin{table}[H]
+  \begin{center}
+    \caption{Validazione tempi di risposta del webserver}
+    \label{tab:validazione_response_time_web_vs_si}
+    \pgfplotstabletypeset[
+      multicolumn names, % allows to have multicolumn names
+      col sep=comma, % the seperator in our .csv file
+      display columns/0/.style={
+        column name={$SI_{max}$},
+        column type={S[round-mode=places, round-precision=0]},string type},  % use siunitx for formatting
+      display columns/1/.style={
+        column name={$E[T_s]_{web}$},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      display columns/2/.style={
+        column name={$E[T_s]_{web}$ CI95},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      every head row/.style={
+        column name={},
+        before row={\toprule}, % have a rule at top
+        after row={\midrule}, % rule under units
+            },
+        every last row/.style={after row=\bottomrule}, % rule at bottom
+    ]{data_tables/response_time_web_vs_si_max.csv} % filename/path to file
+  \end{center}
+\end{table}
+
+\begin{table}[H]
+  \begin{center}
+    \caption{Validazione tempi di risposta dello spike server}
+    \label{tab:validazione_response_time_spike_vs_si_max}
+    \pgfplotstabletypeset[
+      multicolumn names, % allows to have multicolumn names
+      col sep=comma, % the seperator in our .csv file
+      display columns/0/.style={
+        column name={$SI_{max}$},
+        column type={S[round-mode=places, round-precision=0]},string type},  % use siunitx for formatting
+      display columns/1/.style={
+        column name={$E[T_s]_{spike}$},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      display columns/2/.style={
+        column name={$E[T_s]_{spike}$ CI95},
+        column type={S[round-mode=places, round-precision=4]},string type},
+      every head row/.style={
+        column name={},
+        before row={\toprule}, % have a rule at top
+        after row={\midrule}, % rule under units
+            },
+        every last row/.style={after row=\bottomrule}, % rule at bottom
+    ]{data_tables/response_time_spike_vs_si_max.csv} % filename/path to file
+  \end{center}
+\end{table}
+
+Controntandoli con i risultati ottenuti dalla mia simulazione, si nota come l'andamento sia essenzialmente lo stesso, tuttavia i valori dei tempi differiscono. Questo è probabilmente dovuto dal tempo di simulazione che Serazzi non esplicita direttamente e quindi probabilmente differente dai 5000 secondi utilizzati nella mia simulazione. Tuttavia per non rendere troppo lunghe le simulazioni, ho eseguito una simulazione con \(SI{max}\) = 160 e aumentato il tempo di simulazione a 20000 secondi, per dimostrare che il motivo della differenza nei tempi di risposta è dovuto proprio al tempo di simulazione. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/run_20000sec.png}
+    \caption{Tempi di risposta del webserver con \(SI_{max} = 160\) ottenuti dalla simulazione con 20000 secondi di simulazione.}
+    \label{fig:response_time_web_sim_20000}
+\end{figure}
+
+\subsection{Confronto Throughput}
+Nello studio di riferimento vengono effettuati dei test sul throughput del webserver.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/throughtput_web_spike_serazzi.png}
+    \caption{Throughput del webserver e dello spike server in funzione del carico nel caso di studio di Serazzi}
+    \label{fig:throughput_serazzi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/throughput_web_vs_si_max.png}
+    \caption{Throughput del webserver in funzione del SI\_max ottenuti dalla simulazione.}
+    \label{fig:throughput_web_sim}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/throughput_spike_vs_si_max.png}
+    \caption{Throughput dello spike server in funzione del SI\_max ottenuti dalla simulazione.}
+    \label{fig:throughput_spike_sim}
+\end{figure}
+
+L'andamento e i valori qui sono essenzialmente gli stessi. Purtoppo serazzi non fornisce i valori numerici precisi su cui ha costruito i grafici per confrontarli direttamente.
+
+

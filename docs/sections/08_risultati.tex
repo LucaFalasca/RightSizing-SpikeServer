@@ -40,7 +40,7 @@ Come si può evincere dalla figura \ref{fig:response_time_vs_si_max}, il tempo d
  
 
 \subsection{Obiettivo 2}
-Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accade lo stesso fenomeno descritto nello studio di riferimento: al crescere del tasso di arrivo, il tempo di risposta medio aumenta all'aumentare degli arrivi, fino a non si arriva a saturare il sistema (\(\rho > 1\)) e quindi a superare la soglia \(SI_{max}\). A questo punto, il tempo di risposta comincia a calare fino a che anche lo spike server si satura e il tempo di risposta ricomincia a salire per valori di \(\lambda \geq 11\) nella maggior parte dei casi. Per valori molto bassi il tempo di risposta continua a salire quasi sempre, perché essenzialmente è come se il webserver non venisse utilizzato e tutto il carico finisse sullo spike server, che quindi tende a saturarsi già per valori più bassi di \(\lambda\). Nelle tabelle sottostanti sono riportati i valori numerici però mostrando solo i valori di \(SI_{max}\) a multipli di 20 per la grande quantità di dati generata.
+Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accade lo stesso fenomeno descritto nello studio di riferimento: al crescere del tasso di arrivo, il tempo di risposta medio aumenta all'aumentare del tasso degli arrivi, fino a che non si arriva a saturare il sistema (\(\rho > 1\)) e quindi a superare la soglia \(SI_{max}\). A questo punto, il tempo di risposta comincia a calare fino a che anche lo spike server si satura e il tempo di risposta ricomincia a salire per valori di \(\lambda \geq 11\) nella maggior parte dei casi. Per valori molto bassi di \(SI_{max}\) il tempo di risposta continua a salire quasi sempre, questo accade perché essenzialmente è come se il webserver non venisse utilizzato e tutto il carico finisse sullo spike server, che quindi tende a saturarsi già per valori più bassi di \(\lambda\). Nelle tabelle sottostanti (Tabella \ref{tab:response_time_vs_arrival_rate_vs_si_max} e Tabella \ref{tab:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}) sono riportati i valori numerici però mostrando solo i valori di \(SI_{max}\) a multipli di 20, questa scelta è dovuta alla grande quantità di dati generata. In ogni caso i dati sono consultabili nei file csv all'indirizzo \url{https://github.com/LucaFalasca/RightSizing-SpikeServer}.
 
 \begin{figure}[H]
     \centering
@@ -52,6 +52,7 @@ Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accad
 \begin{table}[H]
     \begin{center}
         \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\)}
+        \label{tab:response_time_vs_arrival_rate_vs_si_max}
         \begin{minipage}[t]{0.48\textwidth}
             \pgfplotstabletypeset[
             multicolumn names, % allows to have multicolumn names
@@ -116,7 +117,7 @@ Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max}, accad
 \end{table}
 
 \subsection{Obiettivo 3}
-Nell'obiettivo 3 si va ad duplicare la potenza dello spike server, per verificare se questo evita il saturamento dello spike server e quindi il successivo aumento del tempo di risposta medio. Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}, lo spike server non arriva più a saturarsi e il tempo di risposta continua a diminuire all'aumentare del tasso di arrivo. 
+Nell'obiettivo 3 si va ad duplicare la potenza dello spike server, per verificare se questo evita il saturamento dello spike server e quindi il successivo aumento del tempo di risposta medio. Come mostrato in figura \ref{fig:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}, lo spike server non arriva più a saturarsi e il tempo di risposta continua a diminuire all'aumentare del tasso di arrivo. I dati tabulari sono riportati nella Tabella \ref{tab:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}.
 
 
 \begin{figure}[H]
@@ -129,6 +130,7 @@ Nell'obiettivo 3 si va ad duplicare la potenza dello spike server, per verificar
 \begin{table}
     \begin{center}
         \caption{Tempo di risposta medio in funzione del tasso di arrivo e di \(SI_{max}\) con spike server potenziato}
+        \label{tab:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}
         \begin{minipage}[t]{0.48\textwidth}
             \pgfplotstabletypeset[
             multicolumn names, % allows to have multicolumn names

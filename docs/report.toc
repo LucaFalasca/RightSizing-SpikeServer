@@ -1,8 +1,9 @@
 \contentsline {section}{\numberline {1}Caso di Studio}{2}{}%
 \contentsline {section}{\numberline {2}Obiettivi dello studio}{2}{}%
 \contentsline {section}{\numberline {3}Modello concettuale}{2}{}%
-\contentsline {subsection}{\numberline {3.1}Spike server}{3}{}%
-\contentsline {subsection}{\numberline {3.2}Web Server}{3}{}%
+\contentsline {subsection}{\numberline {3.1}Tempi di servizio}{3}{}%
+\contentsline {subsection}{\numberline {3.2}Spike server}{3}{}%
+\contentsline {subsection}{\numberline {3.3}Web Server}{3}{}%
 \contentsline {section}{\numberline {4}Modello delle specifiche}{3}{}%
 \contentsline {subsection}{\numberline {4.1}Componenti fisici del sistema: }{3}{}%
 \contentsline {subsection}{\numberline {4.2}Specifiche del carico di lavoro:}{3}{}%
@@ -11,14 +12,14 @@
 \contentsline {subsection}{\numberline {4.5}Gestione della fine della simulazione:}{4}{}%
 \contentsline {section}{\numberline {5}Modello Computazionale}{4}{}%
 \contentsline {subsection}{\numberline {5.1}Stato del sistema}{4}{}%
-\contentsline {subsection}{\numberline {5.2}Descrizione del job}{4}{}%
+\contentsline {subsection}{\numberline {5.2}Descrizione del job}{5}{}%
 \contentsline {subsection}{\numberline {5.3}Identificazione degli eventi}{5}{}%
 \contentsline {subsection}{\numberline {5.4}Logica di controllo e routing}{5}{}%
 \contentsline {subsection}{\numberline {5.5}Configurazione dei parametri delle distribuzioni}{5}{}%
 \contentsline {subsection}{\numberline {5.6}Struttura del simulatore}{6}{}%
-\contentsline {subsubsection}{\numberline {5.6.1}Parallelismo}{6}{}%
+\contentsline {subsubsection}{\numberline {5.6.1}Parallelismo}{7}{}%
 \contentsline {subsection}{\numberline {5.7}Raccolta delle metriche}{7}{}%
-\contentsline {subsection}{\numberline {5.8}Scheduler}{8}{}%
+\contentsline {subsection}{\numberline {5.8}Scheduler}{9}{}%
 \contentsline {section}{\numberline {6}Verifica}{9}{}%
 \contentsline {subsection}{\numberline {6.1}Verifica del routing basato su soglia \(SI_{max}\)}{9}{}%
 \contentsline {subsubsection}{\numberline {6.1.1}Verifica con \(SI_{max}=0\)}{9}{}%

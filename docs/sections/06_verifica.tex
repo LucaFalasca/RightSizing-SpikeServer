@@ -77,36 +77,13 @@ Impostando un carico di lavoro fisso e variando il valore di \(SI_{max}\), si pu
 \end{table}
 
 \subsubsection{Verifica del throughput}
-Variando il carico di lavoro da 1 req/s a 12 req/s e impostando \(SI_{max} = \infty\), in modo da misurare solo il web server, si può verificare che il throughput del sistema non superi mai il suo limite teorico, che nel caso considerato è uguale a \(\min(\mu_{web}, \lambda_{web})\). Tuttavia, come evidenziato in Figura 6, il throughput misurato \(X_{measured} = N_{completed} / T_{sim}\) supera il limite teorico in condizioni di sovraccarico \((\rho>1)\). L'analisi di questa anomalia ha identificato la causa nella gestione della fine della simulazione (stopping condition).
-
-Il protocollo di simulazione adottato, per mantenere stretta aderenza al caso di studio di riferimento, interrompe la simulazione a  \(T_{stop}=1200s\) senza attendere lo svuotamento delle code. Questa scelta metodologica introduce un bias sistematico quando il sistema è instabile:
-\begin{itemize}
-  \item Il calcolo del throughput considera solo i job completati entro $T_{stop}$.
-  \item A causa della distribuzione iperesponenziale dei servizi (cv=4), i job con richieste di servizio brevi tendono a completare rapidamente, mentre i job con richieste lunghe ("heavy tail") tendono ad accumularsi in coda e rimanere incompleti allo scadere del tempo.
-\end{itemize}
-
-  Di conseguenza, il rapporto tra job completati e tempo trascorso risulta sovrastimato rispetto alla capacità reale del server di smaltire lavoro medio.
-
-
+Variando il carico di lavoro da 1 req/s a 12 req/s e impostando \(SI_{max} = \infty\), in modo da misurare solo il web server, si può verificare che il throughput del sistema non superi mai il suo limite teorico, che nel caso considerato è uguale a \(\min(\mu_{web}, \lambda_{web})\). Infatti, come evidenziato in Figura \ref{fig:wrong_throughput}, il throughput misurato \(X_{measured} = N_{completed} / T_{sim}\) non supera il limite teorico e si mantiene sempre al di sotto di esso.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{images/wrong_throughput.png}
     \caption{Throughput misurato che supera il valore teorico}
     \label{fig:wrong_throughput}
-\end{figure}
-
-Sebbene si sia scelto di mantenere questo approccio per garantire la comparabilità dei risultati con il report originale, è fondamentale notare che il simulatore si comporta correttamente se si considera la relazione fondamentale:
-
-\[ X_{calculated} = U_{web} \cdot \mu_{web} \]
-
-Come mostrato in Figura \ref{fig:correct_throughput} e nella Tabella \ref{tab:verifica_throughput2}, il throughput calcolato a partire dall'utilizzazione ($X_{\text{calculated}}$) rispetta perfettamente il limite teorico, confermando che la logica interna del simulatore è corretta e che la discrepanza in Figura 6 è un artefatto della metrica di misurazione scelta dallo studio di riferimento, non un errore implementativo. è bene notare che questa discrepanza emerge solo in condizioni di sovraccarico estremo come questi (\(SI_{max}=\infty\) e \(\lambda > \mu\)) e non influenza i risultati principali dello studio, che si concentrano su scenari stabili o moderatamente carichi.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{images/correct_throughput.png}
-    \caption{Throughput calcolato a partire dall'utilizzazione}
-    \label{fig:correct_throughput}
 \end{figure}
 
 \begin{table}[H]
@@ -127,14 +104,6 @@ Come mostrato in Figura \ref{fig:correct_throughput} e nella Tabella \ref{tab:ve
         column type={S[round-mode=places, round-precision=4]},string type},
       display columns/3/.style={
         column name={$X_{theoretical}$},
-        column type={S[round-mode=places, round-precision=4]},string type
-        },
-      display columns/4/.style={
-        column name={$X_{calculated}$},
-        column type={S[round-mode=places, round-precision=4]},string type
-        },
-      display columns/5/.style={
-        column name={$X_{calculated}$ CI95},
         column type={S[round-mode=places, round-precision=4]},string type
         },
       every head row/.style={

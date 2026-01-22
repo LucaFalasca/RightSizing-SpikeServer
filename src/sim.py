@@ -28,8 +28,8 @@ class Track:
 # --- Programma Principale ---
 class Simulator:
     START      = 0.0
-    BIAS_PHASE = 1000.0         # Fase Transitoria di 120 secondi
-    STOP       = 10000.0         # Simuliamo fino a 1200 secondi
+    BIAS_PHASE = 120.0         # Fase Transitoria di 120 secondi
+    STOP       = 1200.0         # Simuliamo fino a 1200 secondi
     INFINITY   = 1e15
     SEED = 8
     REPLICAS = 100

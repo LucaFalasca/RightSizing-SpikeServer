@@ -28,12 +28,12 @@ class Track:
 # --- Programma Principale ---
 class Simulator:
     START      = 0.0
-    BIAS_PHASE = 1000.0         # Fase Transitoria di 120 secondi
-    STOP       = 10000.0         # Simuliamo fino a 1200 secondi
+    STOP       = 5000.0         # Simuliamo fino a 3000 secondi
+    BIAS_PHASE = STOP * 0.1         # Fase Transitoria di 300 secondi
     INFINITY   = 1e15
     SEED = 8
     REPLICAS = 100
-    N_PROCESSES = 12    # Numero di processi paralleli per eseguire le repliche, deve essere <= 85 se no non bastano gli stream RNG
+    N_PROCESSES = 40    # Numero di processi paralleli per eseguire le repliche, deve essere <= 85 se no non bastano gli stream RNG
 
     def __init__(self):
         # --- Parametri del Modello di default ---

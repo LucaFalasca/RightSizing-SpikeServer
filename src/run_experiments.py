@@ -24,7 +24,7 @@ def compose_row(params, stats):
 
 def experiments(simulator : Simulator, stress_test=False, spike_server_enhanced=False):
     buffer = []
-    for si_max in [simulator.INFINITY]:
+    for si_max in range(10, 170, 10):  # Da 10 a 160 con step di 10
         simulator.SI_max = si_max
         if stress_test:
             for arrival_rate in range(1, 13):  # Da 1 req/s a 12 req/s
@@ -48,28 +48,28 @@ def experiments(simulator : Simulator, stress_test=False, spike_server_enhanced=
 if __name__ == "__main__":
     sim = Simulator()
 
-    start_time = time.time()
-    # Esperimento con SI_max variabile tra 10 e 160 per capire il migliore
+    # start_time = time.time()
+    # # Esperimento con SI_max variabile tra 10 e 160 per capire il migliore
     # df1 = experiments(simulator=sim)
     # end_time = time.time()
     # logging.info("Esperimenti completati in %.2f secondi.", end_time - start_time)
     # df1.to_csv("src/data/experiment_si_max.csv", index=False)
 
-    # start_time = time.time()
-    # # Stress test con carico crescente variando sia SI_max tra 10 e 160 che l'arrival rate da 1 req/s a 12 req/s
-    # df2 = experiments(simulator=sim, stress_test=True)
-    # end_time = time.time()
-    # logging.info("Esperimenti di stress test completati in %.2f secondi.", end_time - start_time)
-    # df2.to_csv("src/data/experiment_stress_test.csv", index=False)
+    start_time = time.time()
+    # Stress test con carico crescente variando sia SI_max tra 10 e 160 che l'arrival rate da 1 req/s a 12 req/s
+    df2 = experiments(simulator=sim, stress_test=True)
+    end_time = time.time()
+    logging.info("Esperimenti di stress test completati in %.2f secondi.", end_time - start_time)
+    df2.to_csv("src/data/experiment_stress_test.csv", index=False)
 
-    # start_time = time.time()
-    # # Stesso espermento dello stress test ma con spike server potenziato del doppio
-    # df3 = experiments(simulator=sim, stress_test=True, spike_server_enhanced=True)
-    # end_time = time.time()
-    # logging.info("Esperimenti di stress test con spike server potenziato completati in %.2f secondi.", end_time - start_time)
-    # df3.to_csv("src/data/experiment_stress_test_enhanced_spike.csv", index=False)
+    start_time = time.time()
+    # Stesso espermento dello stress test ma con spike server potenziato del doppio
+    df3 = experiments(simulator=sim, stress_test=True, spike_server_enhanced=True)
+    end_time = time.time()
+    logging.info("Esperimenti di stress test con spike server potenziato completati in %.2f secondi.", end_time - start_time)
+    df3.to_csv("src/data/experiment_stress_test_enhanced_spike.csv", index=False)
 
     # Esperimento con SI_max fisso a 100 e arrival rate fisso a 6 req/s, variando il coefficiente di variazione CV
-    df = experiments(simulator=sim, stress_test=True)
-    df.to_csv("src/data/experiment_inf_si_max.csv", index=False)
+    # df = experiments(simulator=sim, stress_test=True)
+    # df.to_csv("src/data/experiment_inf_si_max.csv", index=False)
 

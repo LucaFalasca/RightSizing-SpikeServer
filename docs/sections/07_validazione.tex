@@ -1,2 +1,29 @@
 \section{Validazione}
 Dato che in questo studio non sono disponibili dati reali con cui confrontare i risultati ottenuti dalla simulazione, la validazione del modello simulativo confronterà i risultati ottenuti con quelli ottenuti dallo studio di riferimento nella prossima sezione del report.
+
+
+\subsection{Confronto tempi di risposta}
+Nello studio di riferimento vengono effettuati dei test sui tempi di risposta sul webserver e sullo spike server. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/response_time_serazzi.png}
+    \caption{Tempi di risposta del webserver e dello spike server in funzione del carico. Fonte: \cite{serazzi_spike_server}.}
+    \label{fig:response_time_serazzi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/response_time_web_vs_si_max.png}
+    \caption{Tempi di risposta del webserver in funzione del SI\_max ottenuti dalla simulazione.}
+    \label{fig:response_time_web_sim}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/response_time_spike_vs_si_max.png}
+    \caption{Tempi di risposta dello spike server in funzione del SI\_max ottenuti dalla simulazione.}
+    \label{fig:response_time_spike_sim}
+\end{figure}
+
+Controntandoli con i risultati ottenuti dalla mia simulazione, si nota come l'andamento sia essenzialmente lo stesso, tuttavia i valori dei tempi differiscono. Questo è probabilmente dovuto dal tempo di simulazione che Serazzi non esplicita direttamente e quindi probabilmente differente dai 5000 secondi utilizzati nella mia simulazione. Tuttavia per non rendere troppo lunghe le simulazioni, ho eseguito una simulazione con SI_max = 160 su 50 repliche anziché 100 e aumentato il tempo di simulazione a 20000 secondi, per dimostrare che il motivo della differenza nei tempi di risposta è dovuto proprio al tempo di simulazione.

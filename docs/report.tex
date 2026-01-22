@@ -18,16 +18,56 @@
 \usepackage{supertabular}
 \usepackage{caption}
 \usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
 \pgfplotsset{compat=1.18}
 
-\title{RightSizing-SpikeServer}
+\title{
+    {\huge \bfseries Right Sizing Spike Server} \\[1em] % [1em] aggiunge spazio extra
+    {\Large Relazione del progetto di PMCSN}
+    {\\[2em] Studio delle }
+}
 
-\author{}
-\date{}
+\author{Luca Falasca \\ 
+\href{mailto:lucafalasca08@gmail.com}{\texttt{lucafalasca08@gmail.com}} \\
+\href{mailto:luca.falasca@alumni.uniroma2.eu}{\texttt{luca.falasca@alumni.uniroma2.eu}} \\[1em]
+Matricola: 0334722}
+\date{AA 2025/2026}
 
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+    \centering % Centra tutto
+    
+    % --- Intestazione (Università/Dipartimento) ---
+    {\scshape\LARGE Università di Roma Tor Vergata \par} % O la tua università
+    \vspace{1cm}
+    
+    % --- Logo (Opzionale - scommenta se hai l'immagine) ---
+    % \includegraphics[width=0.4\textwidth]{logo_universita.png}
+    % \vspace{1.5cm}
+    
+    % --- Titolo e Sottotitolo ---
+    {\huge\bfseries Right Sizing Spike Server \par}
+    \vspace{0.5cm}
+    {\Large Relazione del progetto di PMCSN \par}
+    \vspace{2cm}
+    
+    % --- Autore/i ---
+    {\Large
+    {Luca Falasca \\ 
+    \href{mailto:lucafalasca08@gmail.com}{\texttt{lucafalasca08@gmail.com}} \\
+    \href{mailto:luca.falasca@alumni.uniroma2.eu}{\texttt{luca.falasca@alumni.uniroma2.eu}} \\[2em]
+    Matricola: 0334722}
+    }
+    
+    \vfill % Spinge tutto quello che segue verso il fondo pagina
+    
+    % --- Data / Anno Accademico ---
+    {\large A.A 2025/2026}
+    
+\end{titlepage}
+
 \tableofcontents
 \clearpage
 \input{sections/01_case_study.tex}

@@ -39,8 +39,8 @@ Dove:
 \subsection{Logica di controllo e routing}
 Ogni volta che arriva un nuovo job:
 \begin{itemize}
-    \item Se \(\mathrm{len}(web\_jobs) \leq SI_{max}\), il job viene aggiunto a web\_jobs.
-    \item Se \(\mathrm{len}(web\_jobs) > SI_{max}\), il job viene aggiunto a spike\_jobs.
+    \item Se \(\mathrm{len}(web\_jobs) < SI_{max}\), il job viene aggiunto a web\_jobs.
+    \item Se \(\mathrm{len}(web\_jobs) == SI_{max}\), il job viene aggiunto a spike\_jobs.
 \end{itemize} 
 Ogni volta che un job completa rimuove dalla lista corrispondente il job (web\_jobs o spike\_jobs).
 
@@ -48,7 +48,7 @@ Ogni volta che un job completa rimuove dalla lista corrispondente il job (web\_j
 \begin{itemize}
     \item Stream 0: Inter-arrivi (Iperesponenziale, media 0.15s, cv=4).
     \item Stream 1: Servizio Web Server (Iperesponenziale, media 0.16s, cv=4).
-    \item Stream 2: Servizio Spike Server (Iperesponenziale, media 0.08s, cv=4).
+    \item Stream 2: Servizio Spike Server (Iperesponenziale, media 0.16s, cv=4).
 \end{itemize}
 
 La distribuzione iperesponenziale è stata implementata utilizzando l'esponenziale e l'uniforme della libreria rvgs.py. Con l'uniforme calcoliamo la probabilità di scegliere una delle due esponenziali, e con l'esponenziale calcoliamo il servizio vero e proprio (Figura \ref{fig:hyperexponential}).
@@ -71,7 +71,7 @@ if u < p1:
 else:
     return Exponential(m2)
 \end{lstlisting}
-Da notare che per ogni campionamento dell'esponenziale si utilizzano, quindi, due estrazioni dallo stream del generatore di numeri casuali.
+È importante notare che per ogni campionamento dell'esponenziale si utilizzano, quindi, due estrazioni dallo stream del generatore di numeri casuali. 
 
 \subsection{Struttura del simulatore}
 Il simulatore è strutturato come una classe Simulator che gestisce l'inizializzazione, l'esecuzione e la raccolta delle metriche della simulazione. La classe ha una serie di costanti di configurazione: 
@@ -92,15 +92,15 @@ Dove:
     \item INFINITY: un valore molto grande usato per inizializzare i tempi di evento (deve essere molto più grande di STOP)
     \item SEED: seme per il generatore di numeri casuali, che è stato utilizzato insieme alla libreria rngs.py per tutti i generatori di numeri casuali
     \item REPLICAS: numero di repliche della simulazione (100 repliche)
-    \item N\_PROCESSES: numero di processi paralleli per l'esecuzione delle repliche (12 processi)
+    \item N\_PROCESSES: numero di processi paralleli per l'esecuzione delle repliche (40 processi)
 \end{itemize}
 
 \subsubsection{Parallelismo}
 Per velocizzare l'esecuzione delle repliche della simulazione, è stata implementata una logica di multiprocessing per sfruttare tutti i core della CPU disponibili. Tuttavia per farlo è stato necessario prendere alcune accortezze che permettessero di non minare nè l'indipendenza delle repliche nè la riproducibilità dei risultati. In particolare:
 \begin{itemize}
-    \item ad ogni processo vengono assegnati 3 stream dei 256 disponibili, in modo che ogni processo abbia il proprio spazio di numeri casuali indipendenti dagli altri processi, ma in maniera tale che potessero procedere in parallelo senza che la non deterministicità del parallelismo influisse sull'ordine di estrazione dei numeri casuali.
-    \item Per il numero di repliche introdotte, ogni processo non si avvicinava nemmeno lontanamente al limite dello stream assegnato. \[MODULUS / STREAM \approx 8388607\] È stato comunque implementato un meccanismo in cui una volta sforato il limite dello stream, gli venivano assegnati 3 nuovi stream. Ed essendo il numero di processi 12, e ogni processo usa 3 stream, questo è tranquillamente possibile senza sforare il limite dei 256 stream e senza ulteriori meccanismi di controllo.
-    \item Sempre per garantire la riproducibilità dei risultati, ad ogni processo vengono assegnate sempre lo stesso numero di repliche da eseguire, in modo tale che le ultime repliche non vengano eseguite da processi diversi (e quindi stream diversi) in base all'assegnazione dinamica di essi.
+    \item ad ogni processo vengono assegnati 3 stream dei 256 disponibili, in modo che ogni processo abbia il proprio spazio di numeri casuali indipendenti dagli altri processi, ma in maniera tale che possano procedere in parallelo senza che la non deterministicità del parallelismo influisse sull'ordine di estrazione dei numeri casuali.
+    \item Per il numero di repliche introdotte, ogni processo non si avvicinava nemmeno lontanamente al limite dello stream assegnato. \[MODULUS / STREAM \approx 8388607\] È stato comunque implementato un meccanismo in cui una volta sforato il limite dello stream, il processo riceva 3 nuovi stream esclusivi. Ed essendo il numero di processi 40, e ogni processo usa 3 stream, questo è tranquillamente possibile senza sforare il limite dei 256 stream e senza ulteriori meccanismi di controllo.
+    \item Sempre per garantire la riproducibilità dei risultati, ad ogni processo vengono assegnate sempre lo stesso numero di repliche da eseguire, in modo tale che le ultime esecuzioni non vengano assegnate a processi diversi (e quindi stream diversi) in base all'ordine di esecuzione di essi.
 \end{itemize}
 
 \subsection{Raccolta delle metriche}
@@ -136,11 +136,11 @@ Le metriche finali raccolte sono state:
     \item \textbf{web\_response\_time}: tempo di risposta medio nel web server calcolato come l'integrale del numero di job completati nel web server diviso per il numero di job completati nel web server \[ \frac{area\_node\_web}{completed\_web} \]
     \item \textbf{spike\_response\_time}: tempo di risposta medio nello spike server \[ \frac{area\_node\_spike}{completed\_spike} \]
     \item \textbf{total\_response\_time}: tempo di risposta medio totale \[ \frac{area\_node\_web + area\_node\_spike}{completed\_web + completed\_spike} \]
-    \item \textbf{utilization\_web}: utilizzo medio del web server \[ \frac{area\_busy\_web}{STOP - BIAS\_PHASE} \]
-    \item \textbf{utilization\_spike}: utilizzo medio dello spike server \[ \frac{area\_busy\_spike}{STOP - BIAS\_PHASE} \] 
-    \item \textbf{throughput\_web}: throughput medio del web server \[ \frac{completed\_web}{STOP - BIAS\_PHASE} \]
-    \item \textbf{throughput\_spike}: throughput medio dello spike server \[ \frac{completed\_spike}{STOP - BIAS\_PHASE} \]
-    \item \textbf{throughput\_total}: throughput medio totale \[ \frac{completed\_web + completed\_spike}{STOP - BIAS\_PHASE} \]
+    \item \textbf{utilization\_web}: utilizzo medio del web server \[ \frac{area\_busy\_web}{TEMPO\_FINE\_SIMULAZIONE - BIAS\_PHASE} \]
+    \item \textbf{utilization\_spike}: utilizzo medio dello spike server \[ \frac{area\_busy\_spike}{TEMPO\_FINE\_SIMULAZIONE - BIAS\_PHASE} \] 
+    \item \textbf{throughput\_web}: throughput medio del web server \[ \frac{completed\_web}{TEMPO\_FINE\_SIMULAZIONE - BIAS\_PHASE} \]
+    \item \textbf{throughput\_spike}: throughput medio dello spike server \[ \frac{completed\_spike}{TEMPO\_FINE\_SIMULAZIONE - BIAS\_PHASE} \]
+    \item \textbf{throughput\_total}: throughput medio totale \[ \frac{completed\_web + completed\_spike}{TEMPO\_FINE\_SIMULAZIONE - BIAS\_PHASE} \]
     \item \textbf{scaling\_actions}: numero di azioni di scaling
 \end{itemize}
 

@@ -35,7 +35,7 @@ Vale la pena notare che, nel caso base del webserver, siccome \(\rho > 1\), il s
     \item Arrivi nuovi job:
         \begin{itemize}
             \item Se \(SI < SI_{max}\): invia al webserver principale
-            \item Se \(SI \geq SI_{max}\): invia allo spike server
+            \item Se \(SI = SI_{max}\): invia allo spike server
         \end{itemize}
     \item Completamento job:
         \begin{itemize}
@@ -49,4 +49,4 @@ Nella logica originale del caso di studio, il valore di SI parte da \(SI_{max}\)
 Lo SLA da rispettare è un tempo di risposta medio \(E[R] \leq 8\) secondi.
 
 \subsection{Gestione della fine della simulazione:}
-Dato che il sistema viene studiato a regime, il sistema viene simulato per un tempo fisso di 5000 secondi, scartando i primi 500 secondi di fase transitoria. Inoltre una volta raggiunto il tempo di stop, vengono completati tutti i job ancora in servizio, fermando gli arrivi di nuovi job allo scadere del tempo di stop.
+Dato che il sistema viene studiato a regime, il sistema viene simulato per un tempo fisso di 5000 secondi, scartando i primi 500 secondi di fase transitoria. Inoltre una volta raggiunto il tempo di stop, vengono completati tutti i job ancora in servizio, fermando gli arrivi di nuovi job allo scadere del tempo di stop. La fase transitoria viene scartata per evitare che i risultati vengano influenzati dallo stato iniziale del sistema e quindi ridurre il tempo di simulazione necessario per osservare il comportamento a regime del sistema.

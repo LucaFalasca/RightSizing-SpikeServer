@@ -39,6 +39,8 @@ class Track:
         self.spike_serv_sq_sum = 0.0
         self.spike_serv_count = 0
 
+        self.transient_response_times = []
+
 # Helper per aggiornare le statistiche sperimentali
     def record_arrival(self, val):
         self.arr_sum += val
@@ -59,7 +61,9 @@ class Track:
 class Simulator:
     START      = 0.0
     STOP       = 5000.0         # Simuliamo fino a 5000 secondi
-    BIAS_PHASE = STOP * 0.1         # Fase Transitoria di 500 secondi
+    BIAS_PHASE = 0         # Fase Transitoria di 500 secondi
+    SAMPLING_INTERVAL = 100.0
+    NUM_SAMPLES = int((STOP - BIAS_PHASE) / SAMPLING_INTERVAL) + 1
     INFINITY   = 1e15
     SEED = 8
     REPLICAS = 100
@@ -186,8 +190,17 @@ class Simulator:
             for key, value in result.items():
                 if value is not None:
                     if key not in stats:
-                        stats[key] = WelfordStats()
-                    stats[key].update(value)
+                        if isinstance(value, list) is not True:
+                            stats[key] = WelfordStats()
+                        else:
+                            
+                            stats[key] = [WelfordStats() for _ in range(Simulator.NUM_SAMPLES)]
+                    if isinstance(value, list):
+                        for idx, val in enumerate(value):
+                            if idx < Simulator.NUM_SAMPLES:
+                                stats[key][idx].update(val)
+                    else:
+                        stats[key].update(value)
                 
             if (i + 1) % 10 == 0:
                 logging.info(f"Raccolte {i + 1}/{Simulator.REPLICAS} repliche...")
@@ -202,14 +215,17 @@ class Simulator:
         arrival_stream = worker_id
         web_stream = Simulator.N_PROCESSES + worker_id
         spike_stream = 2 * Simulator.N_PROCESSES + worker_id
-        
 
+        
+        
         input_replica = queue_input.get()
         logging.debug(f"Queue Input Replica: {input_replica}")
         while input_replica is not None:
-
+            transient_list = []
+            sample = 0
             t = Simulator.START
             track = Track()
+            track_transient = Track()
             t = Simulator.START
             time_to_next_arrival = self._GetArrival(arrival_stream)
             track.record_arrival(time_to_next_arrival)
@@ -252,6 +268,8 @@ class Simulator:
                         track.area_busy_web += time_to_next_event
                     if len(spike_jobs) > 0:
                         track.area_busy_spike += time_to_next_event
+                track_transient.area_node_web += len(web_jobs) * time_to_next_event
+                track_transient.area_node_spike += len(spike_jobs) * time_to_next_event
 
                 # A questo punto aggiorno il tempo rimanente di lavoro per ogni job in servizio in base al tempo trascorso
                 for job in web_jobs:
@@ -271,6 +289,7 @@ class Simulator:
                     # Aggiorno le statistiche
                     if t > Simulator.BIAS_PHASE: 
                         track.completed_web += 1
+                        #print(f"Completed Web Jobs: {track.completed_web}")
                         #TODO
                 elif min_work_spike_job is not None and abs(time_to_complete_spike - time_to_next_event) < 1e-8:
                     # Completamento di un job, lo leviamo dalla lista 
@@ -311,7 +330,16 @@ class Simulator:
                                     Arrival: {time_to_next_arrival}, \n \
                                     Min Web: {time_to_complete_web if len(web_jobs) > 0 else Simulator.INFINITY}, \n \
                                     Min Spike: {time_to_complete_spike if len(spike_jobs) > 0 else Simulator.INFINITY}")
-                    
+                
+                if t >= sample * Simulator.SAMPLING_INTERVAL:
+                    #print(f"Worker {worker_id} Sample {sample} at time {t} >= {sample * Simulator.SAMPLING_INTERVAL}")
+                    sample += 1
+                    transient_response_time = (track.area_node_web + track.area_node_spike) / (track.completed_web + track.completed_spike) if (track.completed_web + track.completed_spike) > 0 else 0.0
+                    #print(f"Transient Response Time: {transient_response_time}")
+                    #print(f"Completed Web: {track.completed_web}, Completed Spike: {track.completed_spike}")
+                    #print(f"Area Node Web: {track.area_node_web}, Area Node Spike: {track.area_node_spike}")
+                    track.transient_response_times.append(transient_response_time)
+
                 # Aggiorno il tempo corrente
                 t = t + time_to_next_event
 
@@ -364,7 +392,8 @@ class Simulator:
                 "meas_web_service_mean": meas_web_mean,
                 "meas_web_service_cv": meas_web_cv,
                 "meas_spike_service_mean": meas_spike_mean,
-                "meas_spike_service_cv": meas_spike_cv
+                "meas_spike_service_cv": meas_spike_cv,
+                "transient_response_times": track.transient_response_times
             }
 
             queue_output.put(replica_results)

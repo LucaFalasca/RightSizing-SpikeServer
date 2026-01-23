@@ -1,0 +1,228 @@
+\appendix
+\section{Analisi Transitorio}
+L'analisi del transitorio è stata effettuata per osservare l'andamento del tempo di risposta nel tempo, in modo da analizzare dopo quanto tempo il sistema raggiunge lo stato stazionario. Per fare ciò come negli esperimenti precedenti è stato utilizzato un unico seed = 8, un tempo di simulazione di 5000 secondi ma stavolta ovviamente senza eliminare la fase transitoria, che è proprio quella che ci interessa studiare. Il campionamento del tempo di risposta è stato effettuato ogni 100 secondi.
+
+\subsection{Transitorio Obiettivo 1}
+Qui si mostra l'analisi del transitorio nel caso dell'Obiettivo 1, quindi con \(\lambda =  6.66 req/s\) e \(SI_{max} = 80\).
+Si vede che il tempo di risposta tende a stabilizzarsi intorno al valore di 1500 secondi, anche se continua a salire lentamente. Inoltre come si vede dai valori tabellari, l'intervallo di confidenza si stringe sempre di più, segno che il sistema sta raggiungendo uno stato stazionario.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{images/transient_response_time_obj1.png}
+    \caption{Andamento del tempo di risposta nel tempo per l'Obiettivo 1.}
+    \label{fig:transient_response_time_obj1}
+\end{figure}    
+
+\begin{table}[H]
+    \begin{center}
+        \caption{Tempo di risposta medio in funzione del tempo per \(SI_{max} = 80\) e \(\lambda = 6.66 req/s\).}
+        \pgfplotstabletypeset[
+        multicolumn names, % allows to have multicolumn names
+        col sep=comma, % the seperator in our .csv file
+        display columns/0/.style={
+            column name={$t$},
+            column type={S[round-mode=places, round-precision=0]},string type
+        },
+        display columns/1/.style={
+            column name={$E[T_s]$},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        display columns/2/.style={
+            column name={$E[T_s]$ CI95},
+            column type={S[round-mode=places, round-precision=4]},string type
+        },
+        every head row/.style={
+            before row=\toprule, % adds a top rule before the table header
+            after row=\midrule,  % adds a mid rule after the table header
+        },
+        every last row/.style={
+            after row=\bottomrule, % adds a bottom rule after the table
+        },
+        ]{../docs/data_tables/transient_response_time_obj1.csv}
+    \end{center}
+\end{table}
+
+\subsection{Obiettivo 2}
+Sono state eseguite le analisi del transitorio per tutte le combinazioni di \(SI_{max}\) da 10 a 160 e tassi di arrivo da 1 req/s a 12 req/s. Qui esporrò solo le combinazioni più significative e rappresentative. In ogni caso, anche se sul report ne esporrò solo un sottoinsieme, tutte le immagini e tutte le tabelle con i dati sono disponibili nella cartella \texttt{docs/images} e \texttt{docs/data\_tables} del progetto.
+
+Dagli esperimenti si possono fare una serie di considerazioni:
+\begin{itemize}
+    \item Per i casi con arrival rate basso e alto la convergenza sembra arrivare molto velocemente (Figure \ref{fig:transient_response_time_arrival_rate_2}, \ref{fig:transient_response_time_arrival_rate_4}, \ref{fig:transient_response_time_arrival_rate_10}, \ref{fig:transient_response_time_arrival_rate_12}). Questo perché nel primo caso il sistema è poco carico e quindi riesce a smaltire velocemente le richieste, mentre nel secondo caso il sistema è sovraccarico e quindi il tempo di risposta cresce rapidamente fino a stabilizzarsi su un valore alto.
+    \item I casi più interessanti sono quelli con arrival rate medio vicino alla saturazione del sistema (Figure \ref{fig:transient_response_time_arrival_rate_6}, \ref{fig:transient_response_time_arrival_rate_7}). In questi casi, in cui il sistema è carico ma con una utilizzazione tale per cui il web server è quasi sempre pieno e lo spike server viene attivato e disattivato frequentemente, il tempo di risposta impiega più tempo a stabilizzarsi, soprattutto per valori di \(SI_{max}\) alti. Questo comportamento è osservabile anche nelle figure \ref{fig:transient_response_time_si_max_140}, \ref{fig:transient_response_time_si_max_160} che mostrano lo stesso fenomento da un'altra prospettiva.
+\end{itemize}
+
+\subsection{Obiettivo 3}
+Per l'obiettivo 3 non sono state effettuate analisi del transitorio, in quanto ci si aspetta lo stesso comportamento dell'obiettivo 2, dato che l'unica differenza è la potenza dello spike server.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_arrival_rate_2.png}    
+        \caption{\( \lambda = 2 \)}
+        \label{fig:transient_response_time_arrival_rate_2}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_arrival_rate_4.png}    
+        \caption{\( \lambda = 4 \)}
+        \label{fig:transient_response_time_arrival_rate_4}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_arrival_rate_6.png}    
+        \caption{\( \lambda = 6 \)}   
+        \label{fig:transient_response_time_arrival_rate_6}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_arrival_rate_7.png}    
+        \caption{\( \lambda = 7 \)}   
+        \label{fig:transient_response_time_arrival_rate_7}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_arrival_rate_10.png}    
+        \caption{\( \lambda = 10 \)}   
+        \label{fig:transient_response_time_arrival_rate_10}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_arrival_rate_12.png}    
+        \caption{\( \lambda = 12 \)}   
+        \label{fig:transient_response_time_arrival_rate_12}
+    \end{subfigure}
+    \caption{Andamento del tempo di risposta nel tempo per diversi tassi di arrivo \(\lambda\).}
+    \label{fig:transient_response_time_various_arrival_rate}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_si_max_10.png}    
+        \caption{\(SI_{max} = 10\)}
+        \label{fig:transient_response_time_si_max_10}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_si_max_30.png}    
+        \caption{\(SI_{max} = 30\)}
+        \label{fig:transient_response_time_si_max_30}
+    \end{subfigure}
+
+    \vspace{0.5cm}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_si_max_80.png}    
+        \caption{\(SI_{max} = 80\)}   
+        \label{fig:transient_response_time_si_max_80}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_si_max_90.png}    
+        \caption{\(SI_{max} = 90\)}   
+        \label{fig:transient_response_time_si_max_90}
+    \end{subfigure}
+    \label{fig:transient_response_time_various_si_max}
+
+    \vspace{0.5cm}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_si_max_140.png}    
+        \caption{\(SI_{max} = 140\)}   
+        \label{fig:transient_response_time_si_max_140}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \includegraphics[width=\textwidth]{images/transient_response_time_si_max_160.png}    
+        \caption{\(SI_{max} = 160\)}   
+        \label{fig:transient_response_time_si_max_160}
+    \end{subfigure}
+    \caption{Andamento del tempo di risposta nel tempo per diverse soglie di \(SI_{max}\).}
+    \label{fig:transient_response_time_various_si_max}
+\end{figure}
+
+\begin{table}[H]
+    \begin{center}
+        \caption{Tempo di risposta medio in funzione del tempo per alcune combinazioni di \(SI_{max}\) e \(\lambda\).}
+        \label{tab:response_time_vs_arrival_rate_vs_si_max_enhanced_spike}
+        \begin{minipage}[t]{0.42\textwidth}
+            \pgfplotstabletypeset[
+            multicolumn names, % allows to have multicolumn names
+            col sep=comma, % the seperator in our .csv file
+            display columns/0/.style={
+                column name={\(t\)},
+                column type={S[round-mode=places, round-precision=0]},string type
+            },
+            display columns/1/.style={
+                column name={$E[T_s]$},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            display columns/2/.style={
+                column name={$E[T_s]$ CI95},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            every head row/.style={
+                before row={
+                    \toprule
+                    % Cella 1: Vuota (occupa 1 posto)
+                    \multicolumn{1}{c}{} & 
+                    % Cella 2: Titolo (occupa 2 posti, colonne 2 e 3)
+                    \multicolumn{2}{c}{\textbf{\(SI_{max} = 10 \bigwedge \lambda = 2\)}} \\ 
+                    % Linea che copre solo le colonne 2 e 3
+                    \cmidrule(lr){1-3}
+                }, % adds a top rule before the table header
+                after row=\midrule,  % adds a mid rule after the table header
+            },
+            every last row/.style={
+                after row=\bottomrule, % adds a bottom rule after the table
+            },
+            ]{../docs/data_tables/transient_response_time_si_max_10_arrival_rate_2.csv}
+        \end{minipage}
+        \begin{minipage}[t]{0.28\textwidth}
+            \pgfplotstabletypeset[
+            multicolumn names, % allows to have multicolumn names
+            col sep=comma, % the seperator in our .csv file
+            columns={Transient Response Time Mean, Transient Response Time CI95},
+            display columns/0/.style={
+                column name={$E[T_s]$},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            display columns/1/.style={
+                column name={$E[T_s]$ CI95},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            every head row/.style={
+                before row={
+                    \toprule
+                    \multicolumn{2}{c}{\textbf{\(SI_{max} = 130 \bigwedge \lambda = 8\)}} \\ 
+                    \cmidrule(lr){1-2} % La linea copre dalla colonna 1 alla 2
+                }, % adds a top rule before the table header
+                after row=\midrule,  % adds a mid rule after the table header
+            },
+            every last row/.style={
+                after row=\bottomrule, % adds a bottom rule after the table
+            },
+            ]{../docs/data_tables/transient_response_time_si_max_130_arrival_rate_8.csv}
+        \end{minipage}
+        \begin{minipage}[t]{0.28\textwidth}
+            \pgfplotstabletypeset[
+            multicolumn names, % allows to have multicolumn names
+            col sep=comma, % the seperator in our .csv file
+            columns={Transient Response Time Mean, Transient Response Time CI95},
+            display columns/0/.style={
+                column name={$E[T_s]$},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            display columns/1/.style={
+                column name={$E[T_s]$ CI95},
+                column type={S[round-mode=places, round-precision=4]},string type
+            },
+            every head row/.style={
+                before row={
+                    \toprule
+                    \multicolumn{2}{c}{\textbf{\(SI_{max} = 160 \bigwedge \lambda = 12\)}} \\ 
+                    \cmidrule(lr){1-2} % La linea copre dalla colonna 1 alla 2
+                }, % adds a top rule before the table header
+                after row=\midrule,  % adds a mid rule after the table header
+            },
+            every last row/.style={
+                after row=\bottomrule, % adds a bottom rule after the table
+            },
+            ]{../docs/data_tables/transient_response_time_si_max_160_arrival_rate_12.csv}
+        \end{minipage}
+    \end{center}
+\end{table}

@@ -102,8 +102,8 @@ if __name__ == "__main__":
 
     start_time = time.time()
     # Esperimento transitorio per osservare l'andamento del tempo di risposta nel tempo
-    df4 = transient(simulator=sim, SI_max_list=range(10, 170, 10), arrival_rate_list=range(1, 13))
+    df4 = transient(simulator=sim, SI_max_list=[80], arrival_rate_list=[6.66])
     end_time = time.time()
     logging.info("Esperimenti transitori completati in %.2f secondi.", end_time - start_time)
-    df4.to_csv("src/data/experiment_transient_response_time.csv", index=False)
+    df4.to_csv("src/data/experiment_transient_response_time_obj1.csv", index=False)
 

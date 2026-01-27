@@ -66,10 +66,10 @@ class Simulator:
     NUM_SAMPLES = int((STOP - BIAS_PHASE) / SAMPLING_INTERVAL) + 1
     INFINITY   = 1e15
     SEED = 8
-    REPLICAS = 100
-    N_PROCESSES = 40    # Numero di processi paralleli per eseguire le repliche, deve essere <= 85 se no non bastano gli stream RNG
+    REPLICAS = 1
+    N_PROCESSES = 1    # Numero di processi paralleli per eseguire le repliche, deve essere <= 85 se no non bastano gli stream RNG
 
-    def __init__(self):
+    def __init__(self, seed=SEED):
         # --- Parametri del Modello di default ---
         self._SI_max = 80                 # Soglia SI_max
         self._arrival_mean = 0.15          # 400 req/min
@@ -77,6 +77,7 @@ class Simulator:
         self._spike_mean   = 0.16          # Tasso identico al web server
         self._cv           = 4.0           # Coefficiente di variazione
         self._stream_usage = {}
+        self.seed = seed
         self.reset()
 
     @property
@@ -130,11 +131,11 @@ class Simulator:
         return (self._SI_max, self._arrival_mean, self._web_mean, self._spike_mean, self._cv)
         
     def reset(self):
-        plantSeeds(Simulator.SEED)
+        plantSeeds(self.seed)
         self._stream_usage = {}
 
     def reset_seed(self):
-        plantSeeds(Simulator.SEED)
+        plantSeeds(self.seed)
 
     def _GetArrival(self, stream):
         selectStream(stream) # Stream 0 per gli arrivi
@@ -211,7 +212,7 @@ class Simulator:
         return self.get_parameters(), stats
 
     def _run(self, worker_id, queue_input, queue_output, SI_max):
-        plantSeeds(Simulator.SEED)
+        plantSeeds(self.seed)
         arrival_stream = worker_id
         web_stream = Simulator.N_PROCESSES + worker_id
         spike_stream = 2 * Simulator.N_PROCESSES + worker_id

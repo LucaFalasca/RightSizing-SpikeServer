@@ -72,6 +72,37 @@ def transient(simulator : Simulator, SI_max_list, arrival_rate_list):
     df = pd.DataFrame(buffer)
     return df
 
+def transient_with_different_seeds(simulator : Simulator, SI_max_list, arrival_rate_list, seeds):
+    buffer = []
+    simulator.REPLICAS = 1
+    simulator.N_PROCESSES = 1
+    simulator.BIAS_PHASE = 0.0 
+    for seed in seeds:
+        simulator.seed=seed
+        for si_max in SI_max_list:
+            simulator.SI_max = si_max
+            for arrival_rate in arrival_rate_list:
+                simulator.arrival_mean = 1.0 / arrival_rate
+                logging.info(f"Eseguendo esperimento transitorio con SI_max = {si_max}, arrival rate = {arrival_rate} req/s e seed = {seed}")
+                params, stats = simulator.run()
+                transient_times = stats.pop("transient_response_times", None)
+                if transient_times is not None:
+                    for idx, w in enumerate(transient_times):
+                        t = idx * Simulator.SAMPLING_INTERVAL
+                        row = {
+                            "Seed": seed,
+                            "SI_max": si_max,
+                            "Arrival_Rate": arrival_rate,
+                            "Time": t,
+                            "Transient_Response_Time_Mean": w.mean,
+                            "Transient_Response_Time_Variance": w.variance,
+                            "Transient_Response_Time_CI95": w.confidence_interval_95()
+                        }
+                        buffer.append(row)
+                simulator.reset()
+    df = pd.DataFrame(buffer)
+    return df
+
 if __name__ == "__main__":
     sim = Simulator()
 
@@ -100,10 +131,17 @@ if __name__ == "__main__":
     # df = experiments(simulator=sim, stress_test=True)
     # df.to_csv("src/data/experiment_inf_si_max.csv", index=False)
 
+    # start_time = time.time()
+    # # Esperimento transitorio per osservare l'andamento del tempo di risposta nel tempo
+    # df4 = transient(simulator=sim, SI_max_list=[80], arrival_rate_list=[6.66])
+    # end_time = time.time()
+    # logging.info("Esperimenti transitori completati in %.2f secondi.", end_time - start_time)
+    # df4.to_csv("src/data/experiment_transient_response_time_obj1.csv", index=False)
+
     start_time = time.time()
     # Esperimento transitorio per osservare l'andamento del tempo di risposta nel tempo
-    df4 = transient(simulator=sim, SI_max_list=[80], arrival_rate_list=[6.66])
+    df4 = transient_with_different_seeds(simulator=sim, SI_max_list=[80], arrival_rate_list=[3, 6, 9, 12], seeds=[8, 9, 10, 11, 12, 13, 14])
     end_time = time.time()
     logging.info("Esperimenti transitori completati in %.2f secondi.", end_time - start_time)
-    df4.to_csv("src/data/experiment_transient_response_time_obj1.csv", index=False)
+    df4.to_csv("src/data/experiment_transient_response_time_seeds_arrival_rate.csv", index=False)
 

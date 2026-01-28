@@ -7,3 +7,12 @@ docs/report.toc
 docs/report.out
 src/__pycache__/
 .conda/
+docs/presentation/slides.aux
+docs/presentation/slides.log
+docs/presentation/slides.fls
+docs/presentation/slides.fdb_latexmk
+docs/presentation/slides.synctex.gz
+docs/presentation/slides.toc
+docs/presentation/slides.out
+docs/presentation/slides.nav
+docs/presentation/slides.snm

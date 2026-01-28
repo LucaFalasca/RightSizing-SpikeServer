@@ -1,0 +1,43 @@
+\documentclass[compress]{beamer}
+\usepackage[
+    title={PMCSN: Right Sizing Spike Server},
+    subtitle={Modello di simulazione e analisi delle prestazioni},
+    event={Progetto fine corso PMCSN},
+    author={L. Falasca},
+    longauthor={Luca Falasca},
+    email={luca.falasca@students.uniroma2.eu},
+    institute={Tor Vergata},
+    longinstitute={Università degli Studi di Roma Tor Vergata},
+]{unislides}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{minted}
+\usepackage{algorithm}
+\usepackage{hyperref}
+\usepackage{adjustbox}
+\usepackage{svg}
+\svgsetup{inkscapelatex=false}
+
+\begin{document}
+
+\begin{frame}[plain]
+	\titlepage
+\end{frame}
+
+\input{sections/01_caso_studio_obiettivi.tex}
+\input{sections/02_modello.tex}
+\input{sections/03_analisi_transitorio.tex}
+\input{sections/04_orizzonte.tex}
+\input{sections/05_risultati.tex}
+
+\begin{frame}
+	\frametitle{Grazie per l'attenzione!}
+	\begin{Huge}
+		Domande?
+	\end{Huge} 
+	\\ \\
+	Il codice è disponibile al seguente repository: \url{https://github.com/LucaFalasca/CVRP-PLI-Euristich-Compare}
+	\\ \\
+	
+\end{frame}
+
+\end{document}

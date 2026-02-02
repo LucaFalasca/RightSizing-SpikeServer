@@ -1,0 +1,33 @@
+\section{Verifica e Validazione}
+\subsection{Verifica}
+\begin{frame}{\subsecname}
+    Per verificare la correttezza del modello sono stati effettuati i seguenti controlli:
+    \begin{itemize}
+        \item Verifica routing:
+        \begin{itemize}
+            \item \(SI_{max}=0 \Rightarrow\) solo spike server.
+            \item \(SI_{max}=\infty \Rightarrow\) solo web server.
+        \end{itemize}
+        \item Verifica delle metriche prestazionali:
+        \begin{itemize}
+            \item Verifico che aumentando \(SI_{max}\) l'utilizzazione del web server aumenti
+            \item Verifico throughput corretto
+        \end{itemize}
+        \item Verifica della distribuzione
+        \begin{itemize}
+            \item Verifica che i parametri delle distribuzioni di arrivo e servizio siano corretti
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\subsection{Validazione}
+\begin{frame}{\subsecname}
+    Confronto con lo studio del libro "Performance Engineering" di Serazzi.
+    \begin{itemize}
+        \item Confronto tempi di risposta
+        \item Confronto throughput
+        \item Confronto risultati
+    \end{itemize}
+\end{frame}
+    
+        

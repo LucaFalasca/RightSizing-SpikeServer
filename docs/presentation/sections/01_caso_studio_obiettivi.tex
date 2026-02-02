@@ -1,7 +1,25 @@
 \section{Caso di Studio e Obiettivi}
 \subsection{Caso di Studio}
 \begin{frame}{\subsecname}
+    \begin{itemize}
+        \item Problema del Right Sizing con spike server
+        \item Bilanciamento spreco di risorse e performance
+    \end{itemize}
 \end{frame}
-\subsection{Obiettivi}
+\subsection{Obiettivi dello studio}
 \begin{frame}{\subsecname}
+    \begin{enumerate}
+        \item \textbf{Ottimizzazione soglia}
+        \begin{itemize}
+            \item Trovare \(SI_{max}\) ottimale per \(E[R] < 8 s\) con carico \(\lambda = 6.66\) req/s
+        \end{itemize}
+        \item \textbf{Stress test}
+        \begin{itemize}
+            \item Analizzare il tempo di risposta sotto carichi crescenti (1-12 req/s) variando la soglia \(SI_{max}\)
+        \end{itemize} 
+        \item \textbf{Upgrade spike server}
+        \begin{itemize}
+            \item Ripetere l'analisi di stress test con un server spike con tasso di servizio raddoppiato
+        \end{itemize} 
+    \end{enumerate}
 \end{frame}

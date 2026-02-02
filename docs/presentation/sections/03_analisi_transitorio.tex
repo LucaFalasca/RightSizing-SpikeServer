@@ -1,26 +1,58 @@
-\section{Analisi Transitorio}
+\section{Analisi Transitorio }
+
 \begin{frame}{\secname}
-    \includegraphics[width=0.8\textwidth]{../images/transient_response_time_different_seeds_si_max_80_arrival_rate_6.66.png}
+    L'analisi del transitorio è stata effettuata per determinare il tempo necessario affinché il sistema raggiunga lo stato stazionario. 
+    \begin{itemize}
+        \item Intervallo 0-5000s
+        \item Seed utilizzati {8, 9, 10, 11, 12, 13, 14}
+        \item Analisi per il caso base (\(SI_{max} = 80\), \(\lambda = 6.66\) req/s)
+        \item Analisi al variare di \(SI_{max}\) e \(\lambda\)
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{\secname \(SI_{max} = 80\), \(\lambda = 6.66\) req/s}
+    \includegraphics[trim={3.5cm 1cm 4cm 2cm}, clip, width=0.7\textwidth]{../images/transient_response_time_different_seeds_si_max_80_arrival_rate_6.66.png}
     \begin{itemize}
         \item 0-500s: Maggiore variabilità
         \item 500-1500s: Stabilizzazione
         \item Oltre 1500s: Fase transitoria conclusa
     \end{itemize}
 \end{frame}
-\begin{frame}{\secname}
+\subsection{Variazione \(SI_{max}\)}
+\begin{frame}{\subsecname}
     \begin{columns}
         \begin{column}{.48\textwidth}
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=1\textwidth]{../images/transient_response_time_different_seeds_si_max_40_arrival_rate_6.66.png}
+                \includegraphics[trim={3.5cm 1cm 4cm 2cm}, clip, width=1\textwidth]{../images/transient_response_time_different_seeds_si_max_40_arrival_rate_6.66.png}
                 \caption{Andamento del tempo di risposta medio per \(SI_{max} = 40\) e \(\lambda = 6.66\) con diversi seed}
             \end{figure}
         \end{column}
         \begin{column}{.48\textwidth}
             \begin{figure}[H]
                 \centering
-                \includegraphics[width=1\textwidth]{../images/transient_response_time_different_seeds_si_max_120_arrival_rate_6.66.png}
+                \includegraphics[trim={3.5cm 1cm 4cm 2cm}, clip, width=1\textwidth]{../images/transient_response_time_different_seeds_si_max_120_arrival_rate_6.66.png}
                 \caption{Andamento del tempo di risposta medio per \(SI_{max} = 120\) e \(\lambda = 6.66\) con diversi seed}
+            \end{figure}
+        \end{column}
+    \end{columns}
+\end{frame}
+\subsection{Variazione \(\lambda\)}
+
+\begin{frame}{\subsecname}
+    \begin{columns}
+        \begin{column}{.48\textwidth}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[trim={3.5cm 1cm 4cm 2cm}, clip, width=1\textwidth]{../images/transient_response_time_different_seeds_si_max_80_arrival_rate_3.png}
+                \caption{Andamento del tempo di risposta medio per \(SI_{max} = 80\) e \(\lambda = 3\) con diversi seed}
+            \end{figure}
+        \end{column}
+        \begin{column}{.48\textwidth}
+            \begin{figure}[H]
+                \centering
+                \includegraphics[trim={3.5cm 1cm 4cm 2cm}, clip, width=1\textwidth]{../images/transient_response_time_different_seeds_si_max_80_arrival_rate_9.png}
+                \caption{Andamento del tempo di risposta medio per \(SI_{max} = 80\) e \(\lambda = 9\) con diversi seed}
             \end{figure}
         \end{column}
     \end{columns}

@@ -53,5 +53,32 @@
     \end{columns}
 \end{frame}
 \subsection{Modello computazionale}
-\begin{frame}{\subsecname}
+\subsubsection{Seed e stream}
+\begin{frame}{\subsubsecname}
+    Per tutte le simulazioni è stato utilizzato un solo seed (8) con differenti stream
+    \begin{itemize}
+        \item Indipendenza tra variabili casuali generate
+        \item Indipendenza tra le repliche
+        \item Riproducibilità degli esperimenti
+    \end{itemize}
+
+    \begin{block}{}
+        è stata utilizzata la libreria rngs con i parametri:
+        \begin{itemize}
+            \item \(MODULUS = 2147483647\)
+            \item \(STREAMS = 256\)
+            \item Capacità singolo stream = \(MODULUS / STREAMS = 8388608\)
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\subsubsection{Gestione del parallelismo}
+\begin{frame}{\subsubsecname}
+    Per velocizzare le simulazioni è stato implementato un sistema di parallelismo
+    \begin{itemize}
+        \item 3 stream per processo (3 variabili casuali)
+        \item Ogni processo esegue un numero fisso di repliche
+        \item L'estrazione per ogni replica parte da dove si è fermata la precedente
+        \item 100 repliche per ogni simulazione
+    \end{itemize}   
 \end{frame}
